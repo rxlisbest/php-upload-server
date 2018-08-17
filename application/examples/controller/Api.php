@@ -22,6 +22,9 @@ class Api extends Controller
         /*** 配置结束 ***/
 
         $ext = $request->get('ext');
+        // 存储名称
+        $key = sprintf('%s_%s.%s', date('Ymd'), uniqid(), $ext);
+
         $video_ext = [
             'avi', 'rm', 'rmvb', 'wmv', 'flv', 'mpg', 'mpeg', 'mp4', 'mov', '3gp', 'mkv'
         ];
@@ -34,7 +37,7 @@ class Api extends Controller
             $saveas_ext = $persistentOps_arr[1];
 
             // 转码后名称
-            $saveas_key = sprintf('%s_%s.%s', date('Ymd', time()), unique_key(), $saveas_ext);
+            $saveas_key = sprintf('%s_%s.%s', date('Ymd'), uniqid(), $saveas_ext);
             $saveas = base64_encode($bucket . ':' . $saveas_key);
 
             // 重新生成转码规格，包含转码后文件名称
@@ -50,6 +53,6 @@ class Api extends Controller
         // 生成上传token
         $auth = new Auth($accessKey, $secretKey);
         $upToken = $auth->uploadToken($bucket, $key, 3600, $policy, true);
-        var_dump($upToken);exit;
+        return json(['upToken' => $upToken]);
     }
 }

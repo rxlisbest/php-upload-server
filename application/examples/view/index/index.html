@@ -21,10 +21,7 @@
         var uploader = WebUploader.create({
             // swf文件路径
             swf: '/static/Uploader.swf',
-            // headers: {'upToken': ''},
-            formData: {
-                token: "HDHg2mFJbQP0OEILQxsJbLtw43LizKeu9qH9yUEg:WimK5B_ekBtB7Wg1EE_3JBE36-U=:eyJwZXJzaXN0ZW50T3BzIjoiYXZ0aHVtYlwvbXA0XC9hYlwvMTI4a1wvYXJcLzQ0MTAwXC9hY29kZWNcL2xpYmZhYWNcL3JcLzMwXC92YlwvOTAwa1wvdmNvZGVjXC9saWJ4MjY0XC9zXC82NDB4NDgwXC9hdXRvc2NhbGVcLzFcL3N0cmlwbWV0YVwvMHxzYXZlYXNcL1pHVjJaV3h2Y0RveU1ERTRNRGd4Tmw4MVlqYzBaVFF3T1dZd04yRTNNRFV3TURrME9ETTFMbTF3TkE9PSIsInBlcnNpc3RlbnROb3RpZnlVcmwiOiJodHRwOlwvXC9jYzQ0MWU4MS5uZ3Jvay5pb1wvaW5kZXgucGhwXC9hZG1pblwvcHVibGljXC9xaW5pdWNhbGxiYWNrIiwicGVyc2lzdGVudFBpcGVsaW5lIjoiZGV2ZWxvcCIsInNjb3BlIjoiZGV2ZWxvcCIsImRlYWRsaW5lIjoxNTM0MzkwODA5fQ=="
-            },
+
             // 文件接收服务端。
             server: 'http://127.0.0.1:8094',
 
@@ -36,37 +33,25 @@
             // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
             resize: false
         });
-
-        getFileExt = function (str){
-            var str = str.split(".");
-            var ext = str[str.length - 1];
-            return ext.toLowerCase();
-        };
-
-        setFileKey = function(filename){
-            var date = new Date();
-            var month = "0"+parseInt(date.getMonth()+1);
-            month = month.substr(-2);
-            var day = "0"+date.getDate();
-            day = day.substr(-2);
-            var newtime = date.getFullYear()+''+month+''+day;
-            var guid = "";
-            for (var i = 1; i <= 8; i++){
-                var n = Math.floor(Math.random()*16.0).toString(16);
-                guid +=   n;
-                if((i==4)||(i==12)||(i==16)||(i==20))
-                    guid += "-";
-            }
-            var ext = getFileExt(filename);
-            return newtime+'_'+date.getTime()+guid+'.'+ext;
-        };
+        // 加入队列后请求上传token
+        uploader.on('fileQueued', function(file) {
+            $.ajax({
+                type: "GET",
+                url: "{:url('api/token')}",
+                data: {ext: file.ext},
+                async:false,
+                success: function(response){
+                    file.upToken = response.upToken;
+                }
+            });
+        });
+        // 将token加在请求中
         uploader.on('uploadBeforeSend', function(block, data) {
             // file为分块对应的file对象。
-            var file = block.file;
-            //
-            data.key = setFileKey(file.name);
+            data.token = block.file.upToken;
         });
-            $("#ctlBtn").on('click', function(){
+
+        $("#ctlBtn").on('click', function(){
             uploader.upload();
         });
 
