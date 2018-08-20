@@ -51,6 +51,11 @@
             data.token = block.file.upToken;
         });
 
+        // 将token加在请求中
+        uploader.on('uploadSuccess', function(file, response) {
+            console.log(response);
+        });
+
         $("#ctlBtn").on('click', function(){
             uploader.upload();
         });

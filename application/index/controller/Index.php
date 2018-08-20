@@ -1,6 +1,7 @@
 <?php
 namespace app\index\controller;
 
+use app\common\model\Persistent;
 use app\common\model\PersistentPipeline;
 use app\common\model\UserKey;
 use Pheanstalk\Pheanstalk;
@@ -8,14 +9,18 @@ use Qiniu\Auth;
 use Rxlisbest\FFmpegTranscoding\Slice;
 use Rxlisbest\FFmpegTranscoding\Transcoding;
 use Rxlisbest\SliceUpload\SliceUpload;
+use think\Db;
 use think\Request;
 
 class Index
 {
     public function index(Request $request)
     {
+        header('Access-Control-Allow-Origin:*');
+        header('Access-Control-Allow-Methods:*');
+        header('Access-Control-Allow-Headers:*');
+        header('Access-Control-Allow-Credentials:false');
         if($request->isOptions()){
-            header('Access-Control-Allow-Origin: *');
             exit;
         }
         $post = $request->post();
@@ -31,31 +36,73 @@ class Index
         $auth = new Auth($access_key, $secret_key);
         //
         $uptoken = $auth->signWithData(json_encode($param));
+        $dir = '/Library/WebServer/Documents/htdocs/upload_server/public/upload/' . $user_key->user_id;
 
-        $dir = '/Library/WebServer/Documents/htdocs/upload_server/public/upload';
-        if (!file_exists($dir . '/' . $param['scope'])) {
-            mkdir($dir . '/' . $param['scope'], 0777, true);
+//        if(!file_exists($dir)){
+//            mkdir($dir, 0777, true);
+//            chmod($dir, 0777);
+//        }
+
+        if(count(explode(':', $param['scope'])) > 1){
+            $bucket = explode(':', $param['scope'])[0];
+            $post['key'] = explode(':', $param['scope'])[1];
         }
-        $upload_filename = $dir . '/' . $param['scope'] . '/' . $post['key'];
+        else{
+            $bucket = $param['scope'];
+        }
+
+        if (!file_exists($dir . '/' . $bucket)) {
+            mkdir($dir . '/' . $bucket, 0777, true);
+            chmod($dir . '/' . $bucket, 0777);
+        }
+        $upload_filename = $dir . '/' . $bucket . '/' . $post['key'];
         $slice_upload = new SliceUpload();
         $result = $slice_upload->saveAs($upload_filename);
-        if(isset($param['persistentOps'])){
-            $pheanstalk = new Pheanstalk('127.0.0.1');
 
-            $data = [];
-            $data['input'] = $upload_filename;
-            $data['param'] = $param;
-            $data = json_encode($data);
-            $pheanstalk
-                ->useTube($param['persistentPipeline'])
-                ->put($data);
+        if($result === true){
+            if(isset($param['persistentOps'])){
+                // 存入数据库
+                $persistent = new Persistent();
+                $persistent->ops = $param['persistentOps'];
+                $persistent->pipeline = $param['persistentPipeline'];
+                $persistent->notify_url = $param['persistentNotifyUrl'];
+
+                $persistent->input_bucket = $bucket;
+                $persistent->input_key = $post['key'];
+
+                $persistentOps = explode('|', $param['persistentOps']);
+                if(isset($persistentOps[1])){
+                    $option_arr = explode('/', $persistentOps[1]);
+                    $option = [];
+                    for($i = 0; $i < count($option_arr) / 2; $i ++){
+                        $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
+                    }
+                    $save_as = explode(':', base64_decode($option['saveas']));
+
+                    $persistent->output_bucket = $save_as[0];
+                    $persistent->output_key = $save_as[1];
+                }
+                else{
+                    $persistent->output_bucket = $bucket;
+                    $persistent->output_key = uniqid();
+                }
+
+                $persistent->user_id = $user_key->user_id;
+                $persistent->create_time = time();
+                $persistent->save();
+
+                $pheanstalk = new Pheanstalk('127.0.0.1');
+
+                $pheanstalk
+                    ->useTube($param['persistentPipeline'])
+                    ->put($persistent->id);
+            }
+            return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload_filename)]);
         }
-        var_dump($result);exit;
     }
 
     public function process(){
         $where = [];
-        $where['user_id'] = 1;
         $where['status'] = 1;
         $persistent_pipeline_list = PersistentPipeline::all($where);
         foreach($persistent_pipeline_list as $k => $v){
@@ -74,41 +121,39 @@ class Index
                     if(!$job){
                         continue;
                     }
-                    $data = $job->getData();
-                    $data = json_decode($data);
-                    $param = $data['param'];
-                    $dir = '/Library/WebServer/Documents/htdocs/upload_server/public/upload';
+                    $id = $job->getData();
+                    $persistent = Persistent::get($id);
+                    $dir = '/Library/WebServer/Documents/htdocs/upload_server/public/upload/' . $persistent->user_id;
 
-                    $persistentOps = explode('|', $param['persistentOps']);
+                    if (!file_exists($dir . '/' . $persistent->output_bucket)) {
+                        mkdir($dir . '/' . $persistent->output_bucket, 0777, true);
+                        chmod($dir . '/' . $persistent->output_bucket, 0777);
+                    }
+                    $persistentOps = explode('|', $persistent['ops']);
                     $option_arr = explode('/', $persistentOps[0]);
                     $option = [];
                     for($i = 0; $i < count($option_arr) / 2; $i ++){
                         $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
                     }
+
                     if($option['avthumb'] == 'm3u8'){
                         $transcoding = new Slice(['option' => $option]);
                     }
                     else{
                         $transcoding = new Transcoding(['option' => $option]);
                     }
-                    if(isset($persistentOps[1])){
-                        $option_arr = explode('/', $persistentOps[1]);
-                        $option = [];
-                        for($i = 0; $i < count($option_arr) / 2; $i ++){
-                            $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
-                        }
-                        $save_as = explode(':', base64_decode($option['saveas']));
-
-                        $transcoding_filename = $dir . '/' . $save_as[0] . '/' . $save_as[1];
-                    }
-                    else{
-                        $upload_filename = $dir . '/' . $param['scope'] . '/' . uniqid();
-                    }
-                    $transcoding->exec($upload_filename, $transcoding_filename);
+                    $input = sprintf('%s/%s/%s', $dir, $persistent->input_bucket, $persistent->input_key);
+                    $output = sprintf('%s/%s/%s', $dir, $persistent->output_bucket, $persistent->output_key);
+                    $transcoding->exec($input, $output);
                 }
-            }, true);
-
+            }, false);
+            \swoole_process::daemon();
             $process->start();
         }
+
+//        swoole_event_add($process->pipe, function($pipe) use($process) {
+//            echo sprintf(" code: %s\n", $process->read());
+////            swoole_event_del($pipe);
+//        });
     }
 }

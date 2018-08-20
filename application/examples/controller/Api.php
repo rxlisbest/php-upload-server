@@ -16,7 +16,7 @@ class Api extends Controller
         $bucket = 'bucket_1';
 
         // 视频转码配置
-        $persistentOps = 'avthumb/mp4/ab/128k/ar/44100/acodec/libfaac/r/30/vb/900k/vcodec/libx264/s/640x480/autoscale/1/stripmeta/0';
+        $persistentOps = 'avthumb/m3u8/ab/128k/ar/44100/acodec/libfdk_aac/r/30/vb/900k/vcodec/libx264/s/640x480/autoscale/1/stripmeta/0';
         $persistentPipeline = 'pipeline_1';
         $persistentNotifyUrl = 'http://cc441e81.ngrok.io/index.php/admin/public/qiniucallback';
         /*** 配置结束 ***/
