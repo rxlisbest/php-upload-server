@@ -50,9 +50,11 @@ class Index extends Controller
             if(isset($param['persistentOps'])){
                 // 存入数据库
                 $persistent = new Persistent();
+                $persistent->persistent_id = uniqid('z0.', true);
                 $persistent->ops = $param['persistentOps'];
                 $persistent->pipeline = $param['persistentPipeline'];
                 $persistent->notify_url = $param['persistentNotifyUrl'];
+                $persistent->upload_dir = $user_dir;
 
                 $persistent->input_bucket = $bucket;
                 $persistent->input_key = $post['key'];
@@ -84,6 +86,7 @@ class Index extends Controller
                 $pheanstalk
                     ->useTube($param['persistentPipeline'])
                     ->put($persistent->id);
+                return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload), 'persistentId' => '123']);
             }
             return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload)]);
         }
@@ -113,12 +116,12 @@ class Index extends Controller
                     $id = $job->getData();
                     $persistent = Persistent::get($id);
 
-                    $config = Config::get('upload.');
-                    $dir = $config['dir'] . $persistent->user_id;
+                    $user_dir = $persistent['upload_dir'];
 
-                    if (!file_exists($dir . '/' . $persistent->output_bucket)) {
-                        mkdir($dir . '/' . $persistent->output_bucket, 0777, true);
-                        chmod($dir . '/' . $persistent->output_bucket, 0777);
+                    $bucket_dir = sprintf('%s%s/', $user_dir, $persistent->output_bucket);
+                    if (!file_exists($bucket_dir)) {
+                        mkdir($bucket_dir, 0777, true);
+                        chmod($bucket_dir, 0777);
                     }
                     $persistentOps = explode('|', $persistent['ops']);
                     $option_arr = explode('/', $persistentOps[0]);
@@ -133,8 +136,8 @@ class Index extends Controller
                     else{
                         $transcoding = new Transcoding(['option' => $option]);
                     }
-                    $input = sprintf('%s/%s/%s', $dir, $persistent->input_bucket, $persistent->input_key);
-                    $output = sprintf('%s/%s/%s', $dir, $persistent->output_bucket, $persistent->output_key);
+                    $input = $bucket_dir . $persistent->input_key;
+                    $output = $bucket_dir . $persistent->output_key;
                     $transcoding->exec($input, $output);
                 }
             }, false);

@@ -12,12 +12,17 @@ class Param
         $param = $request->param;
         $user_id = $request->user_id;
 
+        if(!isset($param['scope']) || !$param['scope']){
+            return json(['error' => 'scope not specified'], 400);
+        }
+
         if(count(explode(':', $param['scope'])) > 1){
             $bucket_name = explode(':', $param['scope'])[0];
         }
         else{
             $bucket_name = $param['scope'];
         }
+
         $bucket = Bucket::get(['user_id' => $user_id, 'name' => $bucket_name]);
         if(!$bucket){
             return json(['error' => 'no such bucket'], 631);
