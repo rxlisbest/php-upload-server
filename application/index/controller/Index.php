@@ -4,25 +4,25 @@ namespace app\index\controller;
 use app\common\model\Persistent;
 use app\common\model\PersistentPipeline;
 use app\common\model\UserKey;
+
 use Pheanstalk\Pheanstalk;
 use Qiniu\Auth;
 use Rxlisbest\FFmpegTranscoding\Slice;
 use Rxlisbest\FFmpegTranscoding\Transcoding;
 use Rxlisbest\SliceUpload\SliceUpload;
-use think\Db;
+
+use think\Controller;
+use think\facade\Config;
 use think\Request;
 
-class Index
+class Index extends Controller
 {
+    protected $middleware = [
+        'Cors' => ['only' => ['index']],
+    ];
+
     public function index(Request $request)
     {
-        header('Access-Control-Allow-Origin:*');
-        header('Access-Control-Allow-Methods:*');
-        header('Access-Control-Allow-Headers:*');
-        header('Access-Control-Allow-Credentials:false');
-        if($request->isOptions()){
-            exit;
-        }
         $post = $request->post();
         $token = $token0 = $request->post('token');
         $token = explode(':', $token);
@@ -59,7 +59,7 @@ class Index
         $slice_upload = new SliceUpload();
         $result = $slice_upload->saveAs($upload_filename);
 
-        if($result === true){
+        if($result === 'success'){
             if(isset($param['persistentOps'])){
                 // 存入数据库
                 $persistent = new Persistent();
@@ -91,7 +91,8 @@ class Index
                 $persistent->create_time = time();
                 $persistent->save();
 
-                $pheanstalk = new Pheanstalk('127.0.0.1');
+                $config = Config::get('beanstalkd.');
+                $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
 
                 $pheanstalk
                     ->useTube($param['persistentPipeline'])
@@ -108,14 +109,15 @@ class Index
         foreach($persistent_pipeline_list as $k => $v){
             $process = new \swoole_process(function(\swoole_process $worker) use ($v){
                 // 连接beanstalkd
-                $pheanstalk = new Pheanstalk('127.0.0.1');
+                $config = Config::get('beanstalkd.');
+                $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
 
                 // 监听当前进程的tube
                 $tube = $pheanstalk
                     ->watch($v['name'])
                     ->ignore('default');
 
-                while(true){
+                while(1){
                     $job = $tube->reserve();
                     $pheanstalk->delete($job);
                     if(!$job){
