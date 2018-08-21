@@ -3,10 +3,8 @@ namespace app\index\controller;
 
 use app\common\model\Persistent;
 use app\common\model\PersistentPipeline;
-use app\common\model\UserKey;
 
 use Pheanstalk\Pheanstalk;
-use Qiniu\Auth;
 use Rxlisbest\FFmpegTranscoding\Slice;
 use Rxlisbest\FFmpegTranscoding\Transcoding;
 use Rxlisbest\SliceUpload\SliceUpload;
@@ -19,24 +17,15 @@ class Index extends Controller
 {
     protected $middleware = [
         'Cors' => ['only' => ['index']],
+        'Auth' => ['only' => ['index']],
     ];
 
     public function index(Request $request)
     {
         $post = $request->post();
-        $token = $token0 = $request->post('token');
-        $token = explode(':', $token);
-        $param = json_decode(base64_decode($token[2]), true);
-        $access_key = $token[0];
-        $user_key = UserKey::get(['access_key' => $access_key]);
-        if(!$user_key){
-            echo 0;
-        }
-        $secret_key = $user_key->secret_key;
-        $auth = new Auth($access_key, $secret_key);
-        //
-        $uptoken = $auth->signWithData(json_encode($param));
-        $dir = '/Library/WebServer/Documents/htdocs/upload_server/public/upload/' . $user_key->user_id;
+        $param = $request->param;
+
+        $dir = '/Library/WebServer/Documents/htdocs/upload_server/public/upload/' . $request->user_id;
 
 //        if(!file_exists($dir)){
 //            mkdir($dir, 0777, true);
@@ -87,7 +76,7 @@ class Index extends Controller
                     $persistent->output_key = uniqid();
                 }
 
-                $persistent->user_id = $user_key->user_id;
+                $persistent->user_id = $request->user_id;
                 $persistent->create_time = time();
                 $persistent->save();
 
