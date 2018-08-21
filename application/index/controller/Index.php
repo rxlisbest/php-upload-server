@@ -148,14 +148,14 @@ class Index extends Controller
                     $data['inputBucket'] = $persistent->input_bucket;
                     $data['inputKey'] = $persistent->input_key;
                     $data['items'] = [];
-                    $data['items'][0]['cmd'] = $persistent->opt;
+                    $data['items'][0]['cmd'] = $persistent->ops;
                     $data['items'][0]['code'] = 0;
                     $data['items'][0]['desc'] = 'The fop was completed successfully';
-                    $data['items'][0]['hash'] = $persistent->opt;
+                    $data['items'][0]['hash'] = hash_file('sha1', $output);
                     $data['items'][0]['key'] = $persistent->output_key;
                     $data['items'][0]['returnOld'] = 0;
                     $data['pipeline'] = $persistent->pipeline;
-                    $data['reqid'] = 'The fop was completed successfully';
+                    $data['reqid'] = '';
 
                     $curl = new Curl();
                     $curl->setHeader('Content-Type', 'application/json');
