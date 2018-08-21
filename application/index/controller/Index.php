@@ -18,6 +18,7 @@ class Index extends Controller
     protected $middleware = [
         'Cors' => ['only' => ['index']],
         'Auth' => ['only' => ['index']],
+        'Param' => ['only' => ['index']],
     ];
 
     public function index(Request $request)
@@ -25,12 +26,8 @@ class Index extends Controller
         $post = $request->post();
         $param = $request->param;
 
-        $dir = '/Library/WebServer/Documents/htdocs/upload_server/public/upload/' . $request->user_id;
-
-//        if(!file_exists($dir)){
-//            mkdir($dir, 0777, true);
-//            chmod($dir, 0777);
-//        }
+        $config = Config::get('upload.');
+        $user_dir = sprintf('%s%s/', $config['dir'], $request->user_id);
 
         if(count(explode(':', $param['scope'])) > 1){
             $bucket = explode(':', $param['scope'])[0];
@@ -40,13 +37,14 @@ class Index extends Controller
             $bucket = $param['scope'];
         }
 
-        if (!file_exists($dir . '/' . $bucket)) {
-            mkdir($dir . '/' . $bucket, 0777, true);
-            chmod($dir . '/' . $bucket, 0777);
+        $bucket_dir = sprintf('%s%s/', $user_dir, $bucket);
+        if (!file_exists($bucket_dir)) {
+            mkdir($bucket_dir, 0777, true);
+            chmod($bucket_dir, 0777);
         }
-        $upload_filename = $dir . '/' . $bucket . '/' . $post['key'];
+        $upload = $bucket_dir . $post['key'];
         $slice_upload = new SliceUpload();
-        $result = $slice_upload->saveAs($upload_filename);
+        $result = $slice_upload->saveAs($upload);
 
         if($result === 'success'){
             if(isset($param['persistentOps'])){
@@ -87,7 +85,7 @@ class Index extends Controller
                     ->useTube($param['persistentPipeline'])
                     ->put($persistent->id);
             }
-            return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload_filename)]);
+            return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload)]);
         }
     }
 
@@ -114,7 +112,9 @@ class Index extends Controller
                     }
                     $id = $job->getData();
                     $persistent = Persistent::get($id);
-                    $dir = '/Library/WebServer/Documents/htdocs/upload_server/public/upload/' . $persistent->user_id;
+
+                    $config = Config::get('upload.');
+                    $dir = $config['dir'] . $persistent->user_id;
 
                     if (!file_exists($dir . '/' . $persistent->output_bucket)) {
                         mkdir($dir . '/' . $persistent->output_bucket, 0777, true);
