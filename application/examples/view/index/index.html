@@ -39,7 +39,7 @@
                 type: "GET",
                 url: "{:url('api/token')}",
                 data: {ext: file.ext},
-                async:false,
+                async: false,
                 success: function(response){
                     file.upToken = response.upToken;
                 }
