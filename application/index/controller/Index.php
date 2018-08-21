@@ -86,7 +86,7 @@ class Index extends Controller
                 $pheanstalk
                     ->useTube($param['persistentPipeline'])
                     ->put($persistent->id);
-                return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload), 'persistentId' => '123']);
+                return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload), 'persistentId' => $persistent->persistent_id]);
             }
             return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload)]);
         }
