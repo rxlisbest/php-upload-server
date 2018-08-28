@@ -5,7 +5,7 @@ namespace app\admin\controller;
 use think\Controller;
 use think\Request;
 
-class bucket extends Controller
+class Bucket extends Controller
 {
     /**
      * 显示资源列表
@@ -14,7 +14,7 @@ class bucket extends Controller
      */
     public function index()
     {
-        //
+        return $this->fetch();
     }
 
     /**
