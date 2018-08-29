@@ -1,34 +1,39 @@
 {extend name="Public:base" /}
-{block name="title"}登录{/block}
+{block name="title"}{:lang('login_index_title')}{/block}
 {block name="main"}
     <div class="container">
-        <div class="row vertical-align">
+        <div class="row">
             <div class="col-md-offset-4 col-md-4">
-                <form class="form-horizontal">
+                <h1 class="text-center">
+                    {:lang('login_index_logo_title')}
+                </h1>
+            </div>
+            <div class="col-md-offset-4 col-md-4">
+                <form method="" action="" class="form-horizontal">
                     <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-3 control-label">Email</label>
+                        <label for="username" class="col-sm-3 control-label">{:lang('login_index_input_user_name')}</label>
                         <div class="col-sm-9">
-                            <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                            <input type="text" class="form-control" id="username" placeholder="{:lang('login_index_input_user_name')}" name="user_name">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="inputPassword3" class="col-sm-3 control-label">Password</label>
+                        <label for="password" class="col-sm-3 control-label">{:lang('login_index_input_password')}</label>
                         <div class="col-sm-9">
-                            <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+                            <input type="password" class="form-control" id="password" placeholder="{:lang('login_index_input_password')}" name="password">
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-3 col-sm-9">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox"> Remember me
+                                    <input name="remember_me" type="checkbox"> {:lang('login_index_input_remember_me')}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-3 col-sm-9">
-                            <button type="submit" class="btn btn-default">Sign in</button>
+                            <button type="submit" class="btn btn-default">{:lang('login_index_button_submit')}</button>
                         </div>
                     </div>
                 </form>

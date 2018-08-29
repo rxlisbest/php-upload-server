@@ -4,20 +4,35 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-        <title>{block name="title"}标题{/block}</title>
-        <!-- Bootstrap -->
+        <title>{block name="title"}{/block}</title>
+
         <link href="__STATIC__/admin/css/bootstrap.min.css" rel="stylesheet">
         <link href="__STATIC__/admin/css/style.css" rel="stylesheet">
 
-        <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
         <script src="__STATIC__/admin/js/jquery-3.3.1.min.js"></script>
-        <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
         <script src="__STATIC__/admin/js/bootstrap.min.js"></script>
+        <script src="__STATIC__/admin/js/bootstrap-alert.js"></script>
     </head>
     <body>
         {include file="Public:header" /}
+        <div class="container" id="msg"></div>
         {block name="main"}{/block}
         {include file="Public:footer" /}
+        <script type="application/javascript">
+            $("form").submit(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr("action"),
+                    data: $(this).serialize(),
+                    success:function (data){
+                        $("#msg").rrsAlert('你好!');
+                    },
+                    error:function(){
+                        alert('error')
+                    }
+                })
+                return false;
+            });
+        </script>
     </body>
 </html>
