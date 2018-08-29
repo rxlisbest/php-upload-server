@@ -4,9 +4,8 @@ namespace app\admin\controller;
 
 use think\Controller;
 use think\Request;
-use app\common\model\Bucket AS BucketModel;
 
-class Bucket extends Controller
+class Login extends Controller
 {
     /**
      * 显示资源列表
@@ -15,7 +14,6 @@ class Bucket extends Controller
      */
     public function index()
     {
-        $list = BucketModel::all([]);
         return $this->fetch();
     }
 
@@ -26,7 +24,7 @@ class Bucket extends Controller
      */
     public function create()
     {
-        return $this->fetch();
+        //
     }
 
     /**
@@ -59,7 +57,7 @@ class Bucket extends Controller
      */
     public function edit($id)
     {
-        return $this->fetch();
+        //
     }
 
     /**
