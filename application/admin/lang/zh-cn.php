@@ -17,4 +17,5 @@ return [
     'login_index_error_no_user' => '用户名不存在',
     'login_index_error_incorrect_password' => '密码不正确',
     'logout_index_title' => '退出登录',
+    'user_index_title' => '个人中心',
 ];

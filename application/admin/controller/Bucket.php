@@ -16,6 +16,7 @@ class Bucket extends Controller
     public function index()
     {
         $list = BucketModel::all([]);
+        $this->assign('list', $list);
         return $this->fetch();
     }
 
