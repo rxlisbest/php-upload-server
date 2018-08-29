@@ -24,11 +24,21 @@
                     type: 'POST',
                     url: $(this).attr("action"),
                     data: $(this).serialize(),
-                    success:function (data){
-                        $("#msg").rrsAlert('你好!');
+                    success:function (response){
+                        if(response.code == 0){
+                            $("#msg").rrsAlert(response.msg);
+                        }
+                        else{
+                            if(response.url){
+                                window.location.href = response.url;
+                            }
+                            else{
+                                window.location.reload();
+                            }
+                        }
                     },
                     error:function(){
-                        alert('error')
+                        // do nothing
                     }
                 })
                 return false;
