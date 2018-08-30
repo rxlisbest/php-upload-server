@@ -6,6 +6,8 @@
  * Time: 下午12:38
  */
 return [
+    'form_post_success'  => '操作成功',
+    'form_post_failure'  => '操作失败',
     'login_index_title'  => '登录',
     'login_index_logo_title'  => 'RRS 后台管理系统',
     'login_index_input_user_name' => '用户名',
@@ -19,6 +21,10 @@ return [
     'logout_index_title' => '退出登录',
     'user_index_title' => '个人中心',
     'bucket_index_new' => '新建储存空间',
+    'bucket_index_tab_title' => '内容管理',
+    'bucket_index_search_button_value' => '搜索',
+    'bucket_index_table_th_name' => '文件名',
+    'bucket_index_table_th_create_time' => '创建时间',
     'bucket_create_input_name' => '名称',
     'bucket_create_button_submit' => '提交',
     'bucket_create_error_empty_name' => '名称不能为空',

@@ -1,6 +1,8 @@
 <?php
 namespace app\index\controller;
 
+use app\common\model\Bucket;
+use app\common\model\File;
 use app\common\model\Persistent;
 use app\common\model\PersistentPipeline;
 
@@ -48,6 +50,13 @@ class Index extends Controller
         $result = $slice_upload->saveAs($upload);
 
         if($result === 'success'){
+            // insert into table file
+            $bucket_info = Bucket::get(['name' => $bucket]);
+            $file = new File();
+            $file->name = $post['key'];
+            $file->bucket_id = $bucket_info->id;
+            $file->save();
+
             if(isset($param['persistentOps'])){
                 // 存入数据库
                 $persistent = new Persistent();
