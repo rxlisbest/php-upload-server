@@ -26,25 +26,9 @@ class Bucket extends Controller
         else{
             $info = BucketModel::get(['user_id' => $request->user->id, 'status' => BucketModel::STATUS_ON]);
         }
-        $file_model = new FileModel();
-        $where = [];
-        $where['bucket_id'] = $info->id;
-        $where['status'] = FileModel::STATUS_ON;
-        $file_model = $file_model->where($where);
 
-        $query = [];
-        if($request->name){
-            $file_model = $file_model->whereLike('name', "%{$request->name}%");
-            $query['name'] = $request->name;
-        }
-        $file_list = $file_model->paginate(10, false, [
-            'query' => $query
-        ]);
-        $file_page = $file_list->render();
         $this->assign('info', $info);
         $this->assign('list', $list);
-        $this->assign('file_list', $file_list);
-        $this->assign('file_page', $file_page);
         return $this->fetch();
     }
 
@@ -103,9 +87,30 @@ class Bucket extends Controller
      * @param  int  $id
      * @return \think\Response
      */
-    public function read($id)
+    public function file(Request $request)
     {
-        //
+        $list = BucketModel::all(['status' => BucketModel::STATUS_ON]);
+        $info = BucketModel::get(['id' => $request->id, 'status' => BucketModel::STATUS_ON]);
+        $file_model = new FileModel();
+        $where = [];
+        $where['bucket_id'] = $info->id;
+        $where['status'] = FileModel::STATUS_ON;
+        $file_model = $file_model->where($where);
+
+        $query = [];
+        if($request->name){
+            $file_model = $file_model->whereLike('name', "%{$request->name}%");
+            $query['name'] = $request->name;
+        }
+        $file_list = $file_model->paginate(10, false, [
+            'query' => $query
+        ]);
+        $file_page = $file_list->render();
+        $this->assign('info', $info);
+        $this->assign('list', $list);
+        $this->assign('file_list', $file_list);
+        $this->assign('file_page', $file_page);
+        return $this->fetch();
     }
 
     /**
