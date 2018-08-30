@@ -5,38 +5,31 @@
     <div class="row">
         <div class="col-md-2">
             <ul class="nav nav-pills nav-stacked">
-                <li role="presentation" class="active"><a href="#">Home</a></li>
-                <li role="presentation"><a href="#">Profile</a></li>
-                <li role="presentation"><a href="#">Messages</a></li>
+                <li role="presentation" class="active"><a href="{:url('create')}">{:lang('bucket_index_new')}</a></li>
+                {foreach $list as $k => $v}
+                <li role="presentation"><a href="{:url('index', ['id' => $v->id])}">{$v.name}</a></li>
+                {/foreach}
             </ul>
         </div>
         <div class="col-md-10">
-            <ul class="nav nav-tabs">
-                <li role="presentation"><a href="#">Home</a></li>
-                <li role="presentation" class="active"><a href="#">Profile</a></li>
-                <li role="presentation"><a href="#">Messages</a></li>
-            </ul>
-
-            <form>
+            <form action="{:url('save')}" class="form-horizontal ajax-form">
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+                    <label class="col-sm-1" for="name"><font color="red">*</font>{:lang('bucket_create_input_name')}</label>
+                    <div class="col-sm-11">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="{:lang('bucket_create_input_name')}">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                    <label class="col-sm-1" for="name"></label>
+                    <div class="col-sm-11">
+                        {:lang('bucket_create_format_alert_name')}
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputFile">File input</label>
-                    <input type="file" id="exampleInputFile">
-                    <p class="help-block">Example block-level help text here.</p>
+                    <div class="col-sm-offset-1 col-sm-11">
+                        <button type="submit" class="btn btn-default">{:lang('bucket_create_button_submit')}</button>
+                    </div>
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox"> Check me out
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
             </form>
         </div>
     </div>

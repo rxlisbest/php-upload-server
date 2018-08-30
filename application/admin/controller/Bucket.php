@@ -8,14 +8,25 @@ use app\common\model\Bucket AS BucketModel;
 
 class Bucket extends Controller
 {
+    protected $middleware = [
+        'AdminAuth'
+    ];
     /**
      * 显示资源列表
      *
      * @return \think\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $list = BucketModel::all([]);
+        $list = BucketModel::all(['status' => BucketModel::STATUS_ON]);
+        if($request->id){
+            $info = BucketModel::get(['id' => $request->id, 'status' => BucketModel::STATUS_ON]);
+        }
+        else{
+            $info = BucketModel::get(['user_id' => $request->user->id, 'status' => BucketModel::STATUS_ON]);
+        }
+
+        $this->assign('info', $info);
         $this->assign('list', $list);
         return $this->fetch();
     }
@@ -27,6 +38,9 @@ class Bucket extends Controller
      */
     public function create()
     {
+        $list = BucketModel::all(['status' => BucketModel::STATUS_ON]);
+
+        $this->assign('list', $list);
         return $this->fetch();
     }
 
@@ -38,7 +52,32 @@ class Bucket extends Controller
      */
     public function save(Request $request)
     {
-        //
+        $post = $request->post();
+        if(!trim($post['name'])){
+            $this->error(lang('bucket_create_error_empty_name'));
+        }
+        preg_match("/^[0-9a-zA-Z-]*$/", $post['name'], $match);
+        if(!$match){
+            $this->error(lang('bucket_create_error_format_name'));
+        }
+        if(strlen($post['name']) > 63 || strlen($post['name']) < 4){
+            $this->error(lang('bucket_create_error_length_name'));
+        }
+        $bucket = BucketModel::get(['name' => $post['name'], 'user_id' => $request->user->id]);
+        if($bucket){
+            $this->error(lang('bucket_create_error_repeat_name'));
+        }
+
+        $bucket_model = new BucketModel();
+        $bucket_model->name = $post['name'];
+        $bucket_model->user_id = $request->user->id;
+        $id = $bucket_model->save();
+        if($id !== false){
+            $this->success('', url('index', ['id' => $id]));
+        }
+        else{
+            $this->error();
+        }
     }
 
     /**

@@ -18,4 +18,12 @@ return [
     'login_index_error_incorrect_password' => '密码不正确',
     'logout_index_title' => '退出登录',
     'user_index_title' => '个人中心',
+    'bucket_index_new' => '新建储存空间',
+    'bucket_create_input_name' => '名称',
+    'bucket_create_button_submit' => '提交',
+    'bucket_create_error_empty_name' => '名称不能为空',
+    'bucket_create_error_format_name' => '名称格式不正确',
+    'bucket_create_error_length_name' => '名称长度不正确',
+    'bucket_create_error_repeat_name' => '名称重复',
+    'bucket_create_format_alert_name' => '存储空间名称作为唯一的 Bucket识别符，遇到冲突请更换名称。名称由 4 ~ 63 个字符组成 ，可包含 字母、数字、中划线。',
 ];

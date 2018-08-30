@@ -19,7 +19,7 @@
         {block name="main"}{/block}
         {include file="Public:footer" /}
         <script type="application/javascript">
-            $("form").submit(function () {
+            $(".ajax-form").submit(function () {
                 $.ajax({
                     type: 'POST',
                     url: $(this).attr("action"),

@@ -6,7 +6,7 @@
             <div class="col-md-2">
                 <ul class="nav nav-pills nav-stacked">
                     {foreach $list as $k => $v}
-                        <li role="presentation" class="active"><a href="#">{$v.name}</a></li>
+                        <li role="presentation"{if $info->id == $v->id} class="active"{/if}><a href="{:url('index', ['id' => $v->id])}">{$v.name}</a></li>
                     {/foreach}
                 </ul>
             </div>
