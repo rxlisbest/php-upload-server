@@ -29,6 +29,9 @@ class Bucket extends Controller
         else{
             $info = BucketModel::get(['user_id' => $request->user->id, 'status' => BucketModel::STATUS_ON]);
         }
+        if(!$info){
+            $this->redirect(url('create'));
+        }
         $bucket_domain_list = BucketDomainModel::where(['bucket_id' => $info->id])->order('id DESC')->all();
         $this->assign('info', $info);
         $this->assign('list', $list);
