@@ -7,6 +7,8 @@ use think\Request;
 use app\common\model\Bucket AS BucketModel;
 use app\common\model\File AS FileModel;
 
+use \app\admin\validate\Bucket as BucketValidate;
+
 class Bucket extends Controller
 {
     protected $middleware = [
@@ -54,24 +56,17 @@ class Bucket extends Controller
     public function save(Request $request)
     {
         $post = $request->post();
-        if(!trim($post['name'])){
-            $this->error(lang('bucket_create_error_empty_name'));
-        }
-        preg_match("/^[0-9a-zA-Z-]*$/", $post['name'], $match);
-        if(!$match){
-            $this->error(lang('bucket_create_error_format_name'));
-        }
-        if(strlen($post['name']) > 63 || strlen($post['name']) < 4){
-            $this->error(lang('bucket_create_error_length_name'));
-        }
-        $bucket = BucketModel::get(['name' => $post['name'], 'user_id' => $request->user->id]);
-        if($bucket){
-            $this->error(lang('bucket_create_error_repeat_name'));
+        $post['user_id'] = $request->user->id;
+
+        $validate = new BucketValidate();
+
+        if($validate->check($post) === false){
+            $this->error($validate->getError());
         }
 
         $bucket_model = new BucketModel();
         $bucket_model->name = $post['name'];
-        $bucket_model->user_id = $request->user->id;
+        $bucket_model->user_id = $post['user_id'];
         $result = $bucket_model->save();
         if($result !== false){
             $this->success(lang('form_post_success'), url('index', ['id' => $bucket_model->id]));
@@ -102,7 +97,7 @@ class Bucket extends Controller
             $file_model = $file_model->whereLike('name', "%{$request->name}%");
             $query['name'] = $request->name;
         }
-        $file_list = $file_model->paginate(10, false, [
+        $file_list = $file_model->order('id DESC')->paginate(10, false, [
             'query' => $query
         ]);
         $file_page = $file_list->render();

@@ -34,4 +34,10 @@ return [
     'bucket_create_error_length_name' => '名称长度不正确',
     'bucket_create_error_repeat_name' => '名称重复',
     'bucket_create_format_alert_name' => '存储空间名称作为唯一的 Bucket识别符，遇到冲突请更换名称。名称由 4 ~ 63 个字符组成 ，可包含 字母、数字、中划线。',
+    'bucket_domain_create_format_alert_domain' => '请输入您的域名。<br>注意：域名请先完成在中国大陆的 ICP 备案，同时建议进行公安网备案。',
+    'bucket_domain_create_input_domain' => '域名',
+    'bucket_domain_create_button_submit' => '提交',
+    'bucket_domain_create_error_empty_domain' => '域名不能为空',
+    'bucket_domain_error_format_domain' => '域名格式不正确',
+    'bucket_domain_error_repeat_domain' => '域名重复',
 ];

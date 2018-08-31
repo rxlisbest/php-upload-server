@@ -1,0 +1,42 @@
+{extend name="Public:base" /}
+{block name="title"}空间概览{/block}
+{block name="main"}
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="nav nav-pills nav-stacked">
+                <li role="presentation"><a href="{:url('create')}">{:lang('bucket_index_new')}</a></li>
+                {foreach $bucket_list as $k => $v}
+                <li role="presentation"{if $bucket_info->id == $v->id} class="active"{/if}><a href="{:url('index', ['id' => $v->id])}">{$v.name}</a></li>
+                {/foreach}
+            </ul>
+        </div>
+        <div class="col-md-10">
+            <ul class="nav nav-tabs">
+                <li role="presentation"><a href="{:url('Bucket/index', ['id' => $bucket_info->id])}">{:lang('bucket_index_tab1_title')}</a></li>
+                <li role="presentation"><a href="{:url('Bucket/file', ['id' => $bucket_info->id])}">{:lang('bucket_index_tab2_title')}</a></li>
+                <li role="presentation" class="active"><a href="{:url('BucketDomain/create', ['bucket_id' => $bucket_info->id])}">{:lang('bucket_index_tab3_title')}</a></li>
+            </ul>
+            <form action="{:url('save', ['bucket_id' => $bucket_info->id])}" class="form-horizontal ajax-form margin-top-20">
+                <div class="form-group">
+                    <label class="col-sm-1"></label>
+                    <div class="col-sm-11">
+                        {:lang('bucket_domain_create_format_alert_domain')}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-1" for="domain"><font color="red">*</font>{:lang('bucket_domain_create_input_domain')}</label>
+                    <div class="col-sm-11">
+                        <input type="text" class="form-control" id="domain" name="domain" placeholder="{:lang('bucket_domain_create_input_domain')}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-1 col-sm-11">
+                        <button type="submit" class="btn btn-default">{:lang('bucket_domain_create_button_submit')}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}

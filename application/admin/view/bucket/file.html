@@ -13,9 +13,9 @@
             </div>
             <div class="col-md-10">
                 <ul class="nav nav-tabs">
-                    <li role="presentation" class="active"><a>{:lang('bucket_index_tab1_title')}</a></li>
-                    <li role="presentation"><a href="{:url('file', ['id' => $info->id])}">{:lang('bucket_index_tab2_title')}</a></li>
-                    <li role="presentation"><a href="{:url('BucketDomain/create', ['id' => $info->id])}">{:lang('bucket_index_tab3_title')}</a></li>
+                    <li role="presentation"><a href="{:url('index', ['id' => $info->id])}">{:lang('bucket_index_tab1_title')}</a></li>
+                    <li role="presentation" class="active"><a href="{:url('file', ['id' => $info->id])}">{:lang('bucket_index_tab2_title')}</a></li>
+                    <li role="presentation"><a href="{:url('BucketDomain/create', ['bucket_id' => $info->id])}">{:lang('bucket_index_tab3_title')}</a></li>
                 </ul>
 
                 <div class="pull-right">
@@ -35,10 +35,16 @@
                         </tr>
                     </thead>
                     <tbody>
-
+                    {foreach $file_list as $k => $v}
+                        <tr>
+                            <td>{$v.name}</td>
+                            <td>{$v.create_time}</td>
+                        </tr>
+                    {/foreach}
                     </tbody>
                 </table>
                 <div class="pull-right">
+                    <?php echo $file_page; ?>
                 </div>
             </div>
         </div>
