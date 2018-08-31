@@ -13,7 +13,7 @@ class BucketDomain extends Validate
      * @var array
      */	
 	protected $rule = [
-	    'domain' => 'require|regex:^[^\s]*$|unique:bucket_domain,domain'
+	    'domain' => 'require|activeUrl|unique:bucket_domain,domain'
     ];
     
     /**
@@ -24,7 +24,7 @@ class BucketDomain extends Validate
      */	
     protected $message = [
         'domain.require' => 'bucket_domain_create_error_empty_domain',
-        'domain.regex' => 'bucket_domain_error_format_domain',
+        'domain.activeUrl' => 'bucket_domain_error_format_domain',
         'domain.unique' => 'bucket_domain_error_repeat_domain',
     ];
 }

@@ -5,9 +5,10 @@ namespace app\admin\controller;
 use think\Controller;
 use think\Request;
 use app\common\model\Bucket AS BucketModel;
+use app\common\model\BucketDomain AS BucketDomainModel;
 use app\common\model\File AS FileModel;
 
-use \app\admin\validate\Bucket as BucketValidate;
+use app\admin\validate\Bucket as BucketValidate;
 
 class Bucket extends Controller
 {
@@ -28,9 +29,10 @@ class Bucket extends Controller
         else{
             $info = BucketModel::get(['user_id' => $request->user->id, 'status' => BucketModel::STATUS_ON]);
         }
-
+        $bucket_domain_list = BucketDomainModel::where(['bucket_id' => $info->id])->order('id DESC')->all();
         $this->assign('info', $info);
         $this->assign('list', $list);
+        $this->assign('bucket_domain_list', $bucket_domain_list);
         return $this->fetch();
     }
 

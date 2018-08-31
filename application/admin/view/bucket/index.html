@@ -35,7 +35,12 @@
                         </tr>
                     </thead>
                     <tbody>
-
+                    {foreach $bucket_domain_list as $k => $v}
+                        <tr>
+                            <td>{$v.domain}</td>
+                            <td>{$v.create_time}</td>
+                        </tr>
+                    {/foreach}
                     </tbody>
                 </table>
                 <div class="pull-right">
