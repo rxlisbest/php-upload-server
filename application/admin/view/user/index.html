@@ -1,0 +1,24 @@
+{extend name="Public:base" /}
+{block name="title"}空间概览{/block}
+{block name="main"}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" class="active"><a href="{:url('User/index')}">{:lang('user_index_tab1_title')}</a></li>
+                    <li role="presentation"><a href="{:url('UserKey/index')}">{:lang('user_index_tab2_title')}</a></li>
+                    <li role="presentation"><a href="{:url('User/changePassword')}">{:lang('user_index_tab3_title')}</a></li>
+                </ul>
+
+                <div class="margin-top-20">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">{:lang('user_index_title_user_name')}</div>
+                        <div class="panel-body">
+                            {$info->user_name}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}

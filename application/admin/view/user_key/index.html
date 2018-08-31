@@ -1,0 +1,32 @@
+{extend name="Public:base" /}
+{block name="title"}空间概览{/block}
+{block name="main"}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-tabs">
+                    <li role="presentation"><a href="{:url('User/index')}">{:lang('user_index_tab1_title')}</a></li>
+                    <li role="presentation" class="active"><a href="{:url('UserKey/index')}">{:lang('user_index_tab2_title')}</a></li>
+                    <li role="presentation"><a href="{:url('User/changePassword')}">{:lang('user_index_tab3_title')}</a></li>
+                </ul>
+
+                <table class="table margin-top-20">
+                    <thead>
+                        <tr>
+                            <th>{:lang('bucket_index_table_th_name')}</th>
+                            <th>{:lang('bucket_index_table_th_create_time')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $list as $k => $v}
+                        <tr>
+                            <td>{$v.create_time}</td>
+                            <td>{$v.create_time}</td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{/block}

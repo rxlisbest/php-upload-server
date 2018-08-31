@@ -23,9 +23,9 @@ class Bucket extends Validate
      * @var array
      */	
     protected $message = [
-        'name.require' => 'bucket_create_error_empty_name',
-        'name.regex' => 'bucket_create_error_format_name',
-        'name.length' => 'bucket_create_error_length_name',
-        'name.unique' => 'bucket_create_error_repeat_name',
+        'name.require' => 'persistent_pipeline_create_error_empty_name',
+        'name.regex' => 'persistent_pipeline_error_format_name',
+        'name.length' => 'persistent_pipeline_error_length_name',
+        'name.unique' => 'persistent_pipeline_error_repeat_name',
     ];
 }

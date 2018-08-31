@@ -1,0 +1,37 @@
+{extend name="Public:base" /}
+{block name="title"}空间概览{/block}
+{block name="main"}
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            <ul class="nav nav-pills nav-stacked">
+                <li role="presentation" class="active"><a href="{:url('create')}">{:lang('persistent_pipeline_index_new')}</a></li>
+                {foreach $list as $k => $v}
+                <li role="presentation"><a href="{:url('index', ['id' => $v->id])}">{$v.name}</a></li>
+                {/foreach}
+            </ul>
+        </div>
+        <div class="col-md-10">
+            <form action="{:url('save')}" class="form-horizontal ajax-form margin-top-20">
+                <div class="form-group">
+                    <label class="col-sm-1"></label>
+                    <div class="col-sm-11">
+                        {:lang('persistent_pipeline_create_format_alert_name')}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-1" for="name"><font color="red">*</font>{:lang('persistent_pipeline_create_input_name')}</label>
+                    <div class="col-sm-11">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="{:lang('persistent_pipeline_create_input_name')}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-1 col-sm-11">
+                        <button type="submit" class="btn btn-default">{:lang('persistent_pipeline_create_button_submit')}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{/block}

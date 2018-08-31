@@ -6,6 +6,7 @@
  * Time: 下午12:38
  */
 return [
+    'copyright' => '© 2018-现在 ruiruisun.com 版权所有',
     'form_post_success'  => '操作成功',
     'form_post_failure'  => '操作失败',
     'login_index_title'  => '登录',
@@ -42,4 +43,16 @@ return [
     'bucket_domain_create_error_empty_domain' => '域名不能为空',
     'bucket_domain_error_format_domain' => '域名格式不正确',
     'bucket_domain_error_repeat_domain' => '域名重复',
+    'persistent_pipeline_index_new' => '新建多媒体队列',
+    'persistent_pipeline_create_format_alert_name' => '应用命名只能由 0-9、A-Z、a-z、-、_ 组成，长度为5-20个字符以内',
+    'persistent_pipeline_create_input_name' => '名称',
+    'persistent_pipeline_create_button_submit' => '提交',
+    'persistent_pipeline_create_error_empty_name' => '名称不能为空',
+    'persistent_pipeline_error_format_name' => '名称格式不正确',
+    'persistent_pipeline_error_repeat_name' => '名称重复',
+    'persistent_pipeline_error_length_name' => '名称长度不正确',
+    'user_index_tab1_title' => '个人信息',
+    'user_index_tab2_title' => '密钥管理',
+    'user_index_tab3_title' => '安全设置',
+    'user_index_title_user_name' => '用户名',
 ];
