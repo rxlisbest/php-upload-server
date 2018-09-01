@@ -55,4 +55,10 @@ return [
     'user_index_tab2_title' => '密钥管理',
     'user_index_tab3_title' => '安全设置',
     'user_index_title_user_name' => '用户名',
+    'user_key_index_title_create_time' => '创建时间',
+    'user_key_index_title_ak_sk' => 'AccessKey/SecretKey',
+    'user_key_index_title_status' => '状态',
+    'user_key_index_title_operation' => '操作',
+    'user_key_index_alert' => '一个账号最多拥有两对密钥(Access/Secret Key)；更换密钥时，请创建第二个密钥；删除密钥前须停用；出于安全考虑，建议您周期性地更换密钥。',
+    'user_key_index_new' => '新建密钥',
 ];
