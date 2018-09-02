@@ -44,8 +44,16 @@
                                     </div>
                                 </form>
                             </td>
-                            <td>{$v.create_time}</td>
-                            <td>{$v.create_time}</td>
+                            <td>{:lang('user_key_status_' . $v['status'])}</td>
+                            <td>
+                                <?php if($v['status'] == \app\common\model\UserKey::STATUS_ON): ?>
+                                    <button type="button" class="btn btn-warning">{:lang('user_key_button_set_status_off')}</button>
+                                <?php endif; ?>
+                                <?php if($v['status'] == \app\common\model\UserKey::STATUS_OFF): ?>
+                                    <button type="button" class="btn btn-default">{:lang('user_key_button_set_status_on')}</button>
+                                    <button type="button" class="btn btn-danger">{:lang('user_key_button_delete')}</button>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     {/foreach}
                         <tr>

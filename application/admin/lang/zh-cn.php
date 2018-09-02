@@ -61,4 +61,9 @@ return [
     'user_key_index_title_operation' => '操作',
     'user_key_index_alert' => '一个账号最多拥有两对密钥(Access/Secret Key)；更换密钥时，请创建第二个密钥；删除密钥前须停用；出于安全考虑，建议您周期性地更换密钥。',
     'user_key_index_new' => '新建密钥',
+    'user_key_status_0' => '已停用',
+    'user_key_status_1' => '使用中',
+    'user_key_button_set_status_off' => '停用',
+    'user_key_button_set_status_on' => '启用',
+    'user_key_button_delete' => '删除',
 ];
