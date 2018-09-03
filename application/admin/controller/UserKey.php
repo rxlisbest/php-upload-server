@@ -18,20 +18,10 @@ class UserKey extends Controller
      */
     public function index(Request $request)
     {
-        $list = UserKeyModel::all(['user_id' => $request->user->id, 'status' => UserKeyModel::STATUS_ON]);
+        $list = UserKeyModel::all(['user_id' => $request->user->id]);
 
         $this->assign('list', $list);
         return $this->fetch();
-    }
-
-    /**
-     * 显示创建资源表单页.
-     *
-     * @return \think\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -42,29 +32,17 @@ class UserKey extends Controller
      */
     public function save(Request $request)
     {
-        //
-    }
-
-    /**
-     * 显示指定的资源
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function read($id)
-    {
-        //
-    }
-
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function edit($id)
-    {
-        //
+        $user_key_model = new UserKeyModel();
+        $user_key_model->access_key = md5(123);
+        $user_key_model->secret_key = md5(123);
+        $user_key_model->user_id = $request->user->id;
+        $result = $user_key_model->save();
+        if($result !== false){
+            $this->success(lang('form_post_success'));
+        }
+        else{
+            $this->error(lang('form_post_failure'));
+        }
     }
 
     /**
@@ -74,9 +52,17 @@ class UserKey extends Controller
      * @param  int  $id
      * @return \think\Response
      */
-    public function update(Request $request, $id)
+    public function changeStatusSave(Request $request, $id)
     {
-        //
+        $user_key = UserKeyModel::get($id);
+        $user_key->status = $request->status;
+        $result = $user_key->save();
+        if($result !== false){
+            $this->success(lang('form_post_success'));
+        }
+        else{
+            $this->error(lang('form_post_failure'));
+        }
     }
 
     /**
@@ -87,6 +73,13 @@ class UserKey extends Controller
      */
     public function delete($id)
     {
-        //
+        $user_key = UserKeyModel::get($id);
+        $result = $user_key->delete();
+        if($result !== false){
+            $this->success(lang('form_post_success'));
+        }
+        else{
+            $this->error(lang('form_post_failure'));
+        }
     }
 }

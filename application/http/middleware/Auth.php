@@ -4,6 +4,7 @@ namespace app\http\middleware;
 
 use app\common\model\UserKey;
 use Qiniu\Auth AS QiniuAuth;
+use app\common\model\UserKey AS UserKeyModel;
 
 class Auth
 {
@@ -16,7 +17,7 @@ class Auth
         $token = explode(':', $token);
         $param = json_decode(base64_decode($token[2]), true);
         $access_key = $token[0];
-        $user_key = UserKey::get(['access_key' => $access_key]);
+        $user_key = UserKey::get(['access_key' => $access_key, 'status' => UserKeyModel::STATUS_ON]);
         if(!$user_key){
             return json(['error' => 'bad token'], 401);
         }

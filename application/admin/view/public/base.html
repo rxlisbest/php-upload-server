@@ -17,6 +17,24 @@
         {include file="public:header" /}
         <div class="container" id="msg"></div>
         {block name="main"}{/block}
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="offModalLabel" data-url="">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel"></h4>
+                    </div>
+                    <div class="modal-body" id="myModalBody">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{:lang('modal_button_close')}</button>
+                        <button type="button" class="btn btn-primary" onclick="confirm()">{:lang('modal_button_save')}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         {include file="public:footer" /}
         <script type="application/javascript">
             $(".ajax-form").submit(function () {
@@ -33,7 +51,7 @@
                                 window.location.href = response.url;
                             }
                             else{
-                                // window.location.reload();
+                                window.location.reload();
                             }
                         }
                     },
@@ -43,6 +61,38 @@
                 })
                 return false;
             });
+
+            $(".ajax-confirm").click(function () {
+                $("#myModalLabel").html($(this).data('label'));
+                $("#myModalBody").html($(this).data('body'));
+                $('#myModal').data("url", $(this).data('url'));
+                $('#myModal').modal();
+            });
+
+            function confirm(url) {
+                var url = url || $('#myModal').data("url");
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    success:function (response){
+                        if(response.code == 0){
+                            $("#msg").rrsAlert(response.msg);
+                        }
+                        else{
+                            if(response.url){
+                                window.location.href = response.url;
+                            }
+                            else{
+                                window.location.reload();
+                            }
+                        }
+                        $('#myModal').modal('toggle');
+                    },
+                    error:function(){
+                        // do nothing
+                    }
+                })
+            }
         </script>
     </body>
 </html>

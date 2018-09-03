@@ -26,32 +26,35 @@
                         <tr>
                             <td>{$v.create_time}</td>
                             <td>
-                                <form class="form-horizontal">
-                                    <div class="form-group">
-                                        <label for="ak" class="col-sm-1 control-label">ak</label>
-                                        <div class="col-sm-11">
-                                            <input type="text" class="form-control" id="ak" value="{$v.secret_key}" disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="sk" class="col-sm-1 control-label">sk</label>
-                                        <div class="col-sm-11">
-                                            <div class="input-group">
-                                                <input type="password" class="form-control" id="sk" value="{$v.secret_key}" disabled>
-                                                <div class="input-group-addon">隐藏</div>
+                                <p>
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label for="ak" class="col-sm-1 control-label">ak</label>
+                                            <div class="col-sm-11">
+                                                <input type="text" class="form-control" id="ak" value="{$v.access_key}" disabled>
                                             </div>
                                         </div>
-                                    </div>
-                                </form>
+                                        <div class="form-group">
+                                            <label for="sk" class="col-sm-1 control-label">sk</label>
+                                            <div class="col-sm-11">
+                                                <div class="input-group">
+                                                    <input type="password" class="form-control" value="{$v.secret_key}" disabled>
+                                                    <div class="input-group-addon secret_key_show">{:lang('user_key_index_secret_key_show')}</div>
+                                                    <div class="input-group-addon secret_key_hide">{:lang('user_key_index_secret_key_hide')}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </p>
                             </td>
                             <td>{:lang('user_key_status_' . $v['status'])}</td>
                             <td>
                                 <?php if($v['status'] == \app\common\model\UserKey::STATUS_ON): ?>
-                                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#offModal">{:lang('user_key_button_set_status_off')}</button>
+                                    <button type="button" class="btn btn-warning ajax-confirm" data-url="{:url('changeStatusSave', ['id' => $v['id'], 'status' => \\app\\common\\model\\UserKey::STATUS_OFF])}" data-label="{:lang('user_key_button_set_status_off')}" data-body="{:lang('user_key_alert_set_status_off')}">{:lang('user_key_button_set_status_off')}</button>
                                 <?php endif; ?>
                                 <?php if($v['status'] == \app\common\model\UserKey::STATUS_OFF): ?>
-                                    <button type="button" class="btn btn-default">{:lang('user_key_button_set_status_on')}</button>
-                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">{:lang('user_key_button_delete')}</button>
+                                    <a href="{:url('changeStatusSave', ['id' => $v['id'], 'status' => \\app\\common\\model\\UserKey::STATUS_ON])}" class="btn btn-default">{:lang('user_key_button_set_status_on')}</a>
+                                    <button type="button" class="btn btn-danger ajax-confirm" data-url="{:url('delete', ['id' => $v['id']])}" data-label="{:lang('user_key_button_delete')}" data-body="{:lang('user_key_alert_delete')}">{:lang('user_key_button_delete')}</button>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -62,7 +65,7 @@
                             <td></td>
                             <td>
                             {if count($list) < 2}
-                                <button type="button" class="btn btn-default pull-right">{:lang('user_key_index_new')}</button>
+                                <a href="{:url('save')}" class="btn btn-default pull-right">{:lang('user_key_index_new')}</a>
                             {/if}
                             </td>
                         </tr>
@@ -71,41 +74,20 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="deleteModalLabel">{:lang('user_key_button_delete')}</h4>
-                </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="offModal" tabindex="-1" role="dialog" aria-labelledby="offModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="offModalLabel">{:lang('user_key_button_delete')}</h4>
-                </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script type="application/javascript">
+        $(function () {
+            $(".secret_key_hide").hide();
+            $('#offModal').modal();
+        });
+        $(".secret_key_show").click(function () {
+            $(this).hide();
+            $(this).siblings(".secret_key_hide").show();
+            $(this).siblings("input").attr('type', 'text');
+        });
+        $(".secret_key_hide").click(function () {
+            $(this).hide();
+            $(this).siblings(".secret_key_show").show();
+            $(this).siblings("input").attr('type', 'password');
+        });
+    </script>
 {/block}
