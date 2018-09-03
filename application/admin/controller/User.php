@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use think\Controller;
 use think\Request;
+use app\common\model\User AS UserModel;
 
 class User extends Controller
 {
@@ -21,69 +22,26 @@ class User extends Controller
         return $this->fetch();
     }
 
-    /**
-     * 显示创建资源表单页.
-     *
-     * @return \think\Response
-     */
-    public function create()
-    {
-        //
+    public function changePassword(){
+        return $this->fetch('change_password');
     }
 
-    /**
-     * 保存新建的资源
-     *
-     * @param  \think\Request  $request
-     * @return \think\Response
-     */
-    public function save(Request $request)
-    {
-        //
-    }
+    public function changePasswordSave(Request $request){
+        $post = $request->post();
+        $post['user_id'] = $request->user->id;
 
-    /**
-     * 显示指定的资源
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function read($id)
-    {
-        //
-    }
+        if(md5($post['password']) !== $request->user->password){
+            $this->error(lang('form_post_failure'));
+        }
 
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * 保存更新的资源
-     *
-     * @param  \think\Request  $request
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * 删除指定资源
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function delete($id)
-    {
-        //
+        $user_model = new UserModel();
+        $user_model->password = md5($post['password']);
+        $result = $user_model->save();
+        if($result !== false){
+            $this->success(lang('form_post_success'));
+        }
+        else{
+            $this->error(lang('form_post_failure'));
+        }
     }
 }

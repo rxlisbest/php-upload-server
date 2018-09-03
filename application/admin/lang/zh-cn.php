@@ -53,7 +53,7 @@ return [
     'persistent_pipeline_error_length_name' => '名称长度不正确',
     'user_index_tab1_title' => '个人信息',
     'user_index_tab2_title' => '密钥管理',
-    'user_index_tab3_title' => '安全设置',
+    'user_index_tab3_title' => '修改密码',
     'user_index_title_user_name' => '用户名',
     'user_key_index_title_create_time' => '创建时间',
     'user_key_index_title_ak_sk' => 'AccessKey/SecretKey',
@@ -66,4 +66,7 @@ return [
     'user_key_button_set_status_off' => '停用',
     'user_key_button_set_status_on' => '启用',
     'user_key_button_delete' => '删除',
+    'user_change_password_input_old_password' => '旧密码',
+    'user_change_password_input_password' => '新密码',
+    'user_change_password_input_confirm_password' => '确认密码',
 ];
