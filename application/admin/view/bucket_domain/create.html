@@ -4,14 +4,21 @@
 <div class="container">
     <div class="row">
         <div class="col-md-2">
-            <ul class="nav nav-pills nav-stacked">
-                <li role="presentation"><a href="{:url('Bucket/create')}">{:lang('bucket_index_new')}</a></li>
+            <div class="list-group">
+                <a href="{:url('create')}" class="list-group-item">
+                    {:lang('bucket_index_new')}
+                </a>
                 {foreach $bucket_list as $k => $v}
-                <li role="presentation"{if $bucket_info->id == $v->id} class="active"{/if}><a href="{:url('index', ['id' => $v->id])}">{$v.name}</a></li>
+                <a href="{:url('Bucket/index', ['id' => $v->id])}" class="list-group-item {if $bucket_info->id == $v->id}active{/if}">{$v.name}</a>
                 {/foreach}
-            </ul>
+            </div>
         </div>
         <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="{:url('Bucket/index')}">{:lang("header_nav_title_bucket")}</a></li>
+                <li><a href="{:url('Bucket/index', ['id' => $bucket_info->id])}">{$bucket_info.name}</a></li>
+                <li class="active">{:lang('bucket_index_tab3_title')}</li>
+            </ol>
             <ul class="nav nav-tabs">
                 <li role="presentation"><a href="{:url('Bucket/index', ['id' => $bucket_info->id])}">{:lang('bucket_index_tab1_title')}</a></li>
                 <li role="presentation"><a href="{:url('Bucket/file', ['id' => $bucket_info->id])}">{:lang('bucket_index_tab2_title')}</a></li>

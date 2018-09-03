@@ -4,14 +4,22 @@
 <div class="container">
     <div class="row">
         <div class="col-md-2">
-            <ul class="nav nav-pills nav-stacked">
-                <li role="presentation" class="active"><a href="{:url('create')}">{:lang('persistent_pipeline_index_new')}</a></li>
+
+            <div class="list-group">
+                <a href="{:url('create')}" class="list-group-item active">
+                    {:lang('persistent_pipeline_index_new')}
+                </a>
                 {foreach $list as $k => $v}
-                <li role="presentation"><a href="{:url('index', ['id' => $v->id])}">{$v.name}</a></li>
+                <a href="{:url('index', ['id' => $v->id])}" class="list-group-item">{$v.name}</a>
                 {/foreach}
-            </ul>
+            </div>
         </div>
         <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="{:url('PersistentPipeline/index')}">{:lang("header_nav_title_persistent_pipeline")}</a></li>
+                <li class="active">{:lang('persistent_pipeline_index_new')}</li>
+            </ol>
+
             <form action="{:url('save')}" class="form-horizontal ajax-form">
                 <div class="form-group">
                     <label class="col-sm-1" for="name"></label>

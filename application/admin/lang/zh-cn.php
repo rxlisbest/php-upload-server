@@ -11,6 +11,8 @@ return [
     'form_post_failure'  => '操作失败',
     'modal_button_close' => '关闭',
     'modal_button_save' => '确定',
+    'header_nav_title_bucket' => '对象储存',
+    'header_nav_title_persistent_pipeline' => '多媒体队列',
     'login_index_title'  => '登录',
     'login_index_logo_title'  => 'RRS 后台管理系统',
     'login_index_input_user_name' => '用户名',

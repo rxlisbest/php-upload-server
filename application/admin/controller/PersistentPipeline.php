@@ -18,9 +18,23 @@ class PersistentPipeline extends Controller
      *
      * @return \think\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $list = PersistentPipelineModel::all(['status' => PersistentPipelineModel::STATUS_ON]);
+
+        if($request->id){
+            $info = PersistentPipelineModel::get(['id' => $request->id, 'status' => PersistentPipelineModel::STATUS_ON]);
+        }
+        else{
+            $info = PersistentPipelineModel::get(['user_id' => $request->user->id, 'status' => PersistentPipelineModel::STATUS_ON]);
+        }
+        if(!$info){
+            $this->redirect(url('create'));
+        }
+
+        $this->assign('info', $info);
+        $this->assign('list', $list);
+        return $this->fetch();
     }
 
     /**

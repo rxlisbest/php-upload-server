@@ -4,21 +4,22 @@
     <div class="container">
         <div class="row">
             <div class="col-md-2">
-                <ul class="nav nav-pills nav-stacked">
-                    <li role="presentation"><a href="{:url('create')}">{:lang('bucket_index_new')}</a></li>
+                <div class="list-group">
+                    <a href="{:url('create')}" class="list-group-item">
+                        {:lang('persistent_pipeline_index_new')}
+                    </a>
                     {foreach $list as $k => $v}
-                        <li role="presentation"{if $info->id == $v->id} class="active"{/if}><a href="{:url('index', ['id' => $v->id])}">{$v.name}</a></li>
+                        <a href="{:url('index', ['id' => $v->id])}" class="list-group-item {if $info->id == $v->id}active{/if}">{$v.name}</a>
                     {/foreach}
-                </ul>
+                </div>
             </div>
             <div class="col-md-10">
-                <ul class="nav nav-tabs">
-                    <li role="presentation" class="active"><a>{:lang('bucket_index_tab1_title')}</a></li>
-                    <li role="presentation"><a href="{:url('file', ['id' => $info->id])}">{:lang('bucket_index_tab2_title')}</a></li>
-                    <li role="presentation"><a href="{:url('BucketDomain/create', ['bucket_id' => $info->id])}">{:lang('bucket_index_tab3_title')}</a></li>
-                </ul>
+                <ol class="breadcrumb">
+                    <li><a href="{:url('PersistentPipeline/index')}">{:lang("header_nav_title_persistent_pipeline")}</a></li>
+                    <li class="active">{$info.name}</li>
+                </ol>
 
-                <table class="table table-striped margin-top-20">
+                <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>{:lang('bucket_index_table_th_name')}</th>
@@ -26,12 +27,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {foreach $bucket_domain_list as $k => $v}
                         <tr>
-                            <td>{$v.domain}</td>
-                            <td>{$v.create_time}</td>
+                            <td>2</td>
+                            <td>3</td>
                         </tr>
-                    {/foreach}
                     </tbody>
                 </table>
                 <div class="pull-right">
