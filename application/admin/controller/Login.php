@@ -9,6 +9,9 @@ use think\Request;
 
 class Login extends Controller
 {
+    protected $middleware = [
+        'AdminLogin'
+    ];
     /**
      * 显示资源列表
      *
