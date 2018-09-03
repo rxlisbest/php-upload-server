@@ -2,9 +2,11 @@
 
 namespace app\admin\controller;
 
+use app\admin\validate\UserPassword;
 use think\Controller;
 use think\Request;
 use app\common\model\User AS UserModel;
+use app\admin\validate\UserPassword AS UserPasswordValidate;
 
 class User extends Controller
 {
@@ -28,17 +30,20 @@ class User extends Controller
 
     public function changePasswordSave(Request $request){
         $post = $request->post();
-        $post['user_id'] = $request->user->id;
 
-        if(md5($post['password']) !== $request->user->password){
-            $this->error(lang('form_post_failure'));
+        $validate = new UserPasswordValidate();
+        if($validate->check($post) === false){
+            $this->error($validate->getError());
         }
 
-        $user_model = new UserModel();
+        $user_model = UserModel::get(['id' => $request->user->id, 'password' => md5($post['old_password'])]);
+        if(!$user_model){
+            $this->error(lang('user_change_password_error_old_password'));
+        }
         $user_model->password = md5($post['password']);
         $result = $user_model->save();
         if($result !== false){
-            $this->success(lang('form_post_success'));
+            $this->success(lang('form_post_success'), url('index'));
         }
         else{
             $this->error(lang('form_post_failure'));

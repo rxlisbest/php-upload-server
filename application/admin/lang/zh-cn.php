@@ -69,4 +69,9 @@ return [
     'user_change_password_input_old_password' => '旧密码',
     'user_change_password_input_password' => '新密码',
     'user_change_password_input_confirm_password' => '确认密码',
+    'user_change_password_error_old_password' => '密码错误',
+    'user_change_password_error_empty_old_password' => '旧密码不能为空',
+    'user_change_password_error_empty_password' => '新密码不能为空',
+    'user_change_password_error_empty_confirm_password' => '确认密码不能为空',
+    'user_change_password_error_confirm_password' => '两次输入密码不一致，请检查重填',
 ];

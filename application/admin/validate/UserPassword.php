@@ -12,7 +12,11 @@ class UserPassword extends Validate
      *
      * @var array
      */	
-	protected $rule = [];
+	protected $rule = [
+        'old_password' => 'require',
+        'password' => 'require|confirm',
+        'password_confirm' => 'require',
+    ];
     
     /**
      * 定义错误信息
@@ -20,5 +24,10 @@ class UserPassword extends Validate
      *
      * @var array
      */	
-    protected $message = [];
+    protected $message = [
+        'old_password.require' => 'user_change_password_error_empty_old_password',
+        'password.require' => 'user_change_password_error_empty_password',
+        'password_confirm.require' => 'user_change_password_error_empty_confirm_password',
+        'password.confirm' => 'user_change_password_error_confirm_password',
+    ];
 }
