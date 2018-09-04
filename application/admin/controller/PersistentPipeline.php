@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\common\model\Persistent AS PersistentModel;
 use think\Controller;
 use think\Request;
 use app\common\model\PersistentPipeline AS PersistentPipelineModel;
@@ -31,7 +32,8 @@ class PersistentPipeline extends Controller
         if(!$info){
             $this->redirect(url('create'));
         }
-
+        $persistent_list = PersistentModel::all(['pipeline' => $info->name]);
+        $this->assign('persistent_list', $persistent_list);
         $this->assign('info', $info);
         $this->assign('list', $list);
         return $this->fetch();

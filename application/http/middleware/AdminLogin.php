@@ -9,7 +9,7 @@ class AdminLogin
     public function handle($request, \Closure $next)
     {
         if(Session::has('user')){
-            return redirect(url('Admin/Index/index'));
+            return redirect(url('admin/Index/index'));
         }
         return $next($request);
     }

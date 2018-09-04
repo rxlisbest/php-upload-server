@@ -18,22 +18,28 @@
                     <li><a href="{:url('PersistentPipeline/index')}">{:lang("header_nav_title_persistent_pipeline")}</a></li>
                     <li class="active">{$info.name}</li>
                 </ol>
-                <table class="table table-striped">
+                <table class="table table-striped table-fixed">
                     <thead>
                         <tr>
-                            <th>{:lang('bucket_index_table_th_name')}</th>
-                            <th>{:lang('bucket_index_table_th_create_time')}</th>
+                            <th>{:lang('persistent_pipeline_index_table_th_persistent_id')}</th>
+                            <th>{:lang('persistent_pipeline_index_table_th_input_name')}</th>
+                            <th style="width: 30%;">{:lang('persistent_pipeline_index_table_th_ops')}</th>
+                            <th style="width: 10%;">{:lang('persistent_pipeline_index_table_th_status')}</th>
+                            <th style="width: 50px;">{:lang('persistent_pipeline_index_table_th_operation')}</th>
                         </tr>
                     </thead>
                     <tbody>
+                    {foreach $persistent_list as $k => $v}
                         <tr>
-                            <td>2</td>
-                            <td>3</td>
+                            <td title="{$v.persistent_id}">{$v.persistent_id}</td>
+                            <td title="{$v.input_key}">{$v.input_key}</td>
+                            <td title="{$v.ops}">{$v.ops}</td>
+                            <td>{$v.status}</td>
+                            <td><a href="">查看</a></td>
                         </tr>
+                    {/foreach}
                     </tbody>
                 </table>
-                <div class="pull-right">
-                </div>
             </div>
         </div>
     </div>
