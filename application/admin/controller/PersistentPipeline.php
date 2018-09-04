@@ -69,6 +69,11 @@ class PersistentPipeline extends Controller
             $this->error($validate->getError());
         }
 
+        $count = PersistentPipelineModel::where(['status' => PersistentPipelineModel::STATUS_ON, 'user_id' => $request->user->id])->count();
+        if($count >= config('persistent_pipeline.maximum_number')){
+            $this->error(lang('persistent_pipeline_maximum_number_alert'));
+        }
+
         $persistent_pipe_model = new PersistentPipelineModel();
         $persistent_pipe_model->name = $post['name'];
         $persistent_pipe_model->user_id = $post['user_id'];

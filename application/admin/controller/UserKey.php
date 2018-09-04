@@ -32,6 +32,11 @@ class UserKey extends Controller
      */
     public function save(Request $request)
     {
+
+        $count = UserKeyModel::where(['user_id' => $request->user->id])->count();
+        if($count >= config('user_key.maximum_number')){
+            $this->error(lang('user_key_maximum_number_alert'));
+        }
         $user_key_model = new UserKeyModel();
         $user_key_model->access_key = md5(123);
         $user_key_model->secret_key = md5(123);

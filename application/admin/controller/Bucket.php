@@ -69,6 +69,11 @@ class Bucket extends Controller
             $this->error($validate->getError());
         }
 
+        $count = BucketModel::where(['status' => BucketModel::STATUS_ON, 'user_id' => $request->user->id])->count();
+        if($count >= config('bucket.maximum_number')){
+            $this->error(lang('bucket_maximum_number_alert'));
+        }
+
         $bucket_model = new BucketModel();
         $bucket_model->name = $post['name'];
         $bucket_model->user_id = $post['user_id'];

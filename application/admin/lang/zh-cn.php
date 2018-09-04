@@ -88,4 +88,7 @@ return [
     'user_change_password_error_empty_password' => '新密码不能为空',
     'user_change_password_error_empty_confirm_password' => '确认密码不能为空',
     'user_change_password_error_confirm_password' => '两次输入密码不一致，请检查重填',
+    'persistent_pipeline_maximum_number_alert' => '多媒体队列数量超出限制',
+    'bucket_maximum_number_alert' => 'bucket数量超出限制',
+    'user_key_maximum_number_alert' => '密钥数量超出限制',
 ];

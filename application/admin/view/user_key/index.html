@@ -64,7 +64,7 @@
                             <td></td>
                             <td></td>
                             <td>
-                            {if count($list) < 2}
+                            {if count($list) < config('user_key.maximum_number')}
                                 <a href="{:url('save')}" class="btn btn-default pull-right">{:lang('user_key_index_new')}</a>
                             {/if}
                             </td>
