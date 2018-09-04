@@ -2,11 +2,13 @@
 
 namespace app\admin\controller;
 
-use app\common\model\Persistent AS PersistentModel;
 use think\Controller;
 use think\Request;
+
+use app\common\model\Persistent AS PersistentModel;
 use app\common\model\PersistentPipeline AS PersistentPipelineModel;
 use app\admin\validate\PersistentPipeline as PersistentPipelineValidate;
+
 
 class PersistentPipeline extends Controller
 {
@@ -75,9 +77,7 @@ class PersistentPipeline extends Controller
         }
 
         $persistent_pipe_model = new PersistentPipelineModel();
-        $persistent_pipe_model->name = $post['name'];
-        $persistent_pipe_model->user_id = $post['user_id'];
-        $result = $persistent_pipe_model->save();
+        $result = $persistent_pipe_model->add($post);
         if($result !== false){
             $this->success(lang('form_post_success'), url('index', ['id' => $persistent_pipe_model->id]));
         }

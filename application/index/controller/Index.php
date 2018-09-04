@@ -103,77 +103,100 @@ class Index extends Controller
     }
 
     public function process(){
+        // 连接beanstalkd
+        $config = Config::get('beanstalkd.');
+        $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
+        // 监听当前进程的tube
+        $tube = $pheanstalk
+            ->useTube(config('persistent_pipeline.parent_tube'));
+
         $where = [];
-        $where['status'] = 1;
+        $where['status'] = PersistentPipeline::STATUS_ON;
         $persistent_pipeline_list = PersistentPipeline::all($where);
         foreach($persistent_pipeline_list as $k => $v){
-            $process = new \swoole_process(function(\swoole_process $worker) use ($v){
-                // 连接beanstalkd
-                $config = Config::get('beanstalkd.');
-                $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
-
-                // 监听当前进程的tube
-                $tube = $pheanstalk
-                    ->watch($v['name'])
-                    ->ignore('default');
-
-                while(1){
-                    $job = $tube->reserve();
-                    $pheanstalk->delete($job);
-                    if(!$job){
-                        continue;
-                    }
-                    $id = $job->getData();
-                    $persistent = Persistent::get($id);
-
-                    $user_dir = $persistent['upload_dir'];
-
-                    $bucket_dir = sprintf('%s%s/', $user_dir, $persistent->output_bucket);
-                    if (!file_exists($bucket_dir)) {
-                        mkdir($bucket_dir, 0777, true);
-                        chmod($bucket_dir, 0777);
-                    }
-                    $persistentOps = explode('|', $persistent['ops']);
-                    $option_arr = explode('/', $persistentOps[0]);
-                    $option = [];
-                    for($i = 0; $i < count($option_arr) / 2; $i ++){
-                        $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
-                    }
-
-                    if($option['avthumb'] == 'm3u8'){
-                        $transcoding = new Slice(['option' => $option]);
-                    }
-                    else{
-                        $transcoding = new Transcoding(['option' => $option]);
-                    }
-                    $input = $bucket_dir . $persistent->input_key;
-                    $output = $bucket_dir . $persistent->output_key;
-                    $transcoding->exec($input, $output);
-
-                    $data = [];
-                    $data['code'] = 0;
-                    $data['desc'] = 'The fop was completed successfully';
-                    $data['id'] = $persistent->persistent_id;
-                    $data['inputBucket'] = $persistent->input_bucket;
-                    $data['inputKey'] = $persistent->input_key;
-                    $data['items'] = [];
-                    $data['items'][0]['cmd'] = $persistent->ops;
-                    $data['items'][0]['code'] = 0;
-                    $data['items'][0]['desc'] = 'The fop was completed successfully';
-                    $data['items'][0]['hash'] = hash_file('sha1', $output);
-                    $data['items'][0]['key'] = $persistent->output_key;
-                    $data['items'][0]['returnOld'] = 0;
-                    $data['pipeline'] = $persistent->pipeline;
-                    $data['reqid'] = '';
-
-                    $curl = new Curl();
-                    $curl->setHeader('Content-Type', 'application/json');
-                    $curl->post($persistent->notify_url, $data);
-                }
-            }, false);
-            \swoole_process::daemon();
-            $process->start();
+            $tube->put($v->name);
         }
+        $process = new \swoole_process(function(\swoole_process $worker) use ($config){
+            $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
+            // 监听当前进程的tube
+            $tube = $pheanstalk
+                ->watch(config('persistent_pipeline.parent_tube'))
+                ->ignore('default');
+
+            while(1){
+                $job = $tube->reserve();
+                $pheanstalk->delete($job);
+                if(!$job){
+                    continue;
+                }
+                $persistent_pipeline = $job->getData();
+                $process = new \swoole_process(function(\swoole_process $worker) use ($config, $persistent_pipeline){
+                    $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
+                    // 监听当前进程的tube
+                    $tube = $pheanstalk
+                        ->watch($persistent_pipeline)
+                        ->ignore('default');
+
+                    while(1){
+                        $job = $tube->reserve();
+                        $pheanstalk->delete($job);
+                        if(!$job){
+                            continue;
+                        }
+                        $id = $job->getData();
+                        $persistent = Persistent::get($id);
+
+                        $user_dir = $persistent['upload_dir'];
+
+                        $bucket_dir = sprintf('%s%s/', $user_dir, $persistent->output_bucket);
+                        if (!file_exists($bucket_dir)) {
+                            mkdir($bucket_dir, 0777, true);
+                            chmod($bucket_dir, 0777);
+                        }
+                        $persistentOps = explode('|', $persistent['ops']);
+                        $option_arr = explode('/', $persistentOps[0]);
+                        $option = [];
+                        for($i = 0; $i < count($option_arr) / 2; $i ++){
+                            $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
+                        }
+
+                        if($option['avthumb'] == 'm3u8'){
+                            $transcoding = new Slice(['option' => $option]);
+                        }
+                        else{
+                            $transcoding = new Transcoding(['option' => $option]);
+                        }
+                        $input = $bucket_dir . $persistent->input_key;
+                        $output = $bucket_dir . $persistent->output_key;
+                        $transcoding->exec($input, $output);
+
+//                        $data = [];
+//                        $data['code'] = 0;
+//                        $data['desc'] = 'The fop was completed successfully';
+//                        $data['id'] = $persistent->persistent_id;
+//                        $data['inputBucket'] = $persistent->input_bucket;
+//                        $data['inputKey'] = $persistent->input_key;
+//                        $data['items'] = [];
+//                        $data['items'][0]['cmd'] = $persistent->ops;
+//                        $data['items'][0]['code'] = 0;
+//                        $data['items'][0]['desc'] = 'The fop was completed successfully';
+//                        $data['items'][0]['hash'] = hash_file('sha1', $output);
+//                        $data['items'][0]['key'] = $persistent->output_key;
+//                        $data['items'][0]['returnOld'] = 0;
+//                        $data['pipeline'] = $persistent->pipeline;
+//                        $data['reqid'] = '';
+//
+//                        $curl = new Curl();
+//                        $curl->setHeader('Content-Type', 'application/json');
+//                        $curl->post($persistent->notify_url, $data);
+                    }
+                }, false);
+                \swoole_process::daemon();
+                $process->start();
+            }
+        }, false);
+        \swoole_process::daemon();
+        $process->start();
 
 //        swoole_event_add($process->pipe, function($pipe) use($process) {
 //            echo sprintf(" code: %s\n", $process->read());
