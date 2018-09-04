@@ -32,16 +32,20 @@ class Api extends Controller
         $policy = [];
         // 视频增加转码配置
         if (in_array(strtolower($ext), $video_ext)) {
-            $persistentOps_arr = explode('/', $persistentOps);
-            // 转码后缀
-            $saveas_ext = $persistentOps_arr[1];
+            $persistentOps_list = explode(';', $persistentOps);
+            foreach ($persistentOps_list as $k => $v){
+                $persistentOps_arr = explode('/', $v);
+                // 转码后缀
+                $saveas_ext = $persistentOps_arr[1];
 
-            // 转码后名称
-            $saveas_key = sprintf('%s_%s.%s', date('Ymd'), uniqid(), $saveas_ext);
-            $saveas = base64_encode($bucket . ':' . $saveas_key);
+                // 转码后名称
+                $saveas_key = sprintf('%s_%s.%s', date('Ymd'), uniqid(), $saveas_ext);
+                $saveas = base64_encode($bucket . ':' . $saveas_key);
 
-            // 重新生成转码规格，包含转码后文件名称
-            $persistentOps = sprintf('%s|saveas/%s', $persistentOps, $saveas);
+                // 重新生成转码规格，包含转码后文件名称
+//                $persistentOps_list[$k] = sprintf('%s|saveas/%s', $v, $saveas);
+            }
+            $persistentOps = implode(';', $persistentOps_list);
 
             $policy = [
                 'persistentOps' => $persistentOps,
