@@ -18,9 +18,9 @@ class PersistentPipeline extends Seeder
         Db::name('persistent_pipeline')->where('id', '>', 0)->delete();
 
         $data = [
-            ['id' => 1, 'name' => 'pipeline_1', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()],
-            ['id' => 2, 'name' => 'pipeline_2', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()],
-            ['id' => 3, 'name' => 'pipeline_3', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()]
+            ['id' => 1, 'name' => 'pipeline-1', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()],
+            ['id' => 2, 'name' => 'pipeline-2', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()],
+            ['id' => 3, 'name' => 'pipeline-3', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()]
         ];
 
         Db::name('persistent_pipeline')->insertAll($data);

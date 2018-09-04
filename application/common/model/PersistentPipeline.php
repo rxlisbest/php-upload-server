@@ -30,7 +30,7 @@ class PersistentPipeline extends Model
         // 监听当前进程的tube
         $tube = $pheanstalk
             ->useTube(config('persistent_pipeline.parent_tube'));
-        $result = $tube->put($this->name);
+        $result = $tube->put($data['name']);
         if($result === false){
             Db::rollback();
             return false;

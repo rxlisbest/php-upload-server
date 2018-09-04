@@ -17,8 +17,8 @@ class Bucket extends Seeder
         Db::name('bucket')->where('id', '>', 0)->delete();
 
         $data = [
-            ['id' => 1, 'name' => 'bucket_1', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()],
-            ['id' => 2, 'name' => 'bucket_2', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()]
+            ['id' => 1, 'name' => 'bucket-1', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()],
+            ['id' => 2, 'name' => 'bucket-2', 'user_id' => 1, 'create_time' => time(), 'update_time' => time()]
         ];
 
         Db::name('bucket')->insertAll($data);

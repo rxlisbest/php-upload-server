@@ -13,11 +13,11 @@ class Api extends Controller
         /*** 配置开始 ***/
         $accessKey = 'hjr7j6yL1Rr4PPLoeVflHGt0jF8qSJfg7GU8bHvb';
         $secretKey = 'UQJDIuM6vV4NpzqCXjBbhLu5wrvTOxk2O947Nj8i';
-        $bucket = 'bucket_1';
+        $bucket = 'bucket-1';
 
         // 视频转码配置
         $persistentOps = 'avthumb/m3u8/ab/128k/ar/44100/acodec/libfdk_aac/r/30/vb/900k/vcodec/libx264/s/640x480/autoscale/1/stripmeta/0';
-        $persistentPipeline = 'pipeline_1';
+        $persistentPipeline = 'pipeline-1';
         $persistentNotifyUrl = 'http://cc441e81.ngrok.io/index.php/admin/public/qiniucallback';
         /*** 配置结束 ***/
 
