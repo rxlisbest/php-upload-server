@@ -60,6 +60,7 @@ return [
     'persistent_pipeline_index_table_th_ops' => '处理规格',
     'persistent_pipeline_index_table_th_status' => '状态',
     'persistent_pipeline_index_table_th_operation' => '信息',
+    'persistent_pipeline_index_table_td_operation' => '查看',
     'user_index_tab1_title' => '个人信息',
     'user_index_tab2_title' => '密钥管理',
     'user_index_tab3_title' => '修改密码',

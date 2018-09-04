@@ -35,7 +35,7 @@
                             <td title="{$v.input_key}">{$v.input_key}</td>
                             <td title="{$v.ops}">{$v.ops}</td>
                             <td>{$v.status}</td>
-                            <td><a href="">查看</a></td>
+                            <td><a data-id="{$v.persistent_id}" data-input_key="{$v.input_key}" data-ops="{$v.ops}" data-status="{$v.status}" class="detail">{:lang('persistent_pipeline_index_table_td_operation')}</a></td>
                         </tr>
                     {/foreach}
                     </tbody>
@@ -43,4 +43,25 @@
             </div>
         </div>
     </div>
+    <script type="application/javascript">
+        $('.detail').each(function () {
+            var options = {};
+            options.html = true;
+            options.title = "{:lang('persistent_pipeline_index_table_td_operation')}";
+            options.placement = 'left';
+            options.content = '<table class="table table-popover">\
+            <tbody>\
+            <tr><td>{{id}}</td></tr>\
+            <tr><td>{{input_key}}</td></tr>\
+            <tr><td>{{ops}}</td></tr>\
+            <tr><td>{{status}}</td></tr>\
+            </tbody>\
+            </table>';
+            options.content = options.content.replace(/{{id}}/, $(this).data('id'));
+            options.content = options.content.replace(/{{input_key}}/, $(this).data('input_key'));
+            options.content = options.content.replace(/{{ops}}/, $(this).data('ops'));
+            options.content = options.content.replace(/{{status}}/, $(this).data('status'));
+            $(this).popover(options);
+        });
+    </script>
 {/block}
