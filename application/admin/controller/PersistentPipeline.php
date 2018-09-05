@@ -69,6 +69,7 @@ class PersistentPipeline extends Controller
     {
         $post = $request->post();
         $post['user_id'] = $request->user->id;
+        $post['status'] = PersistentPipelineModel::STATUS_ON;
 
         $validate = new PersistentPipelineValidate();
 
@@ -84,7 +85,7 @@ class PersistentPipeline extends Controller
         $persistent_pipe_model = new PersistentPipelineModel();
         $result = $persistent_pipe_model->add($post);
         if($result !== false){
-            $this->success(lang('form_post_success'), url('index', ['id' => $persistent_pipe_model->id]));
+            $this->success(lang('form_post_success'), url('index', ['id' => $result->id]));
         }
         else{
             $this->error(lang('form_post_failure'));

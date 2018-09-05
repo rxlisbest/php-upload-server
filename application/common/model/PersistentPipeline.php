@@ -15,11 +15,11 @@ class PersistentPipeline extends Model
 
     public function add($data){
         Db::startTrans();
-        $result = $this->save([
+        $persistent_pipeline = PersistentPipeline::create([
             'name' => $data['name'],
             'user_id' => $data['user_id'],
         ]);
-        if($result === false){
+        if($persistent_pipeline === false){
             Db::rollback();
             return false;
         }
@@ -30,13 +30,13 @@ class PersistentPipeline extends Model
         // 监听当前进程的tube
         $tube = $pheanstalk
             ->useTube(config('persistent_pipeline.parent_tube'));
-        $result = $tube->put($data['name']);
+        $result = $tube->put($persistent_pipeline->id);
         if($result === false){
             Db::rollback();
             return false;
         }
         Db::commit();
-        return true;
+        return $persistent_pipeline;
     }
 
     public function deletePersistentPipeline($id){
@@ -59,7 +59,7 @@ class PersistentPipeline extends Model
         // 监听当前进程的tube
         $tube = $pheanstalk
             ->useTube(config('persistent_pipeline.parent_delete_tube'));
-        $result = $tube->put($persistent_pipeline->pid);
+        $result = $tube->put($pid);
 
         if($result === false){
             Db::rollback();

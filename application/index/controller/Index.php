@@ -136,7 +136,7 @@ class Index extends Controller
         $where['status'] = PersistentPipeline::STATUS_ON;
         $persistent_pipeline_list = PersistentPipeline::all($where);
         foreach($persistent_pipeline_list as $k => $v){
-            $tube->put($v->name);
+            $tube->put($v->id);
         }
         // add process
         $process = new \swoole_process(function(\swoole_process $worker) use ($config){
@@ -152,13 +152,13 @@ class Index extends Controller
                 if(!$job){
                     continue;
                 }
-                $persistent_pipeline = $job->getData();
+                $persistent_pipeline_id = $job->getData();
                 // transcoding process
-                $process = new \swoole_process(function(\swoole_process $worker) use ($config, $persistent_pipeline){
+                $process = new \swoole_process(function(\swoole_process $worker) use ($config, $persistent_pipeline_id){
                     $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
                     // 监听当前进程的tube
                     $tube = $pheanstalk
-                        ->watch($persistent_pipeline)
+                        ->watch($persistent_pipeline_id)
                         ->ignore('default');
 
                     while(1){
@@ -176,7 +176,7 @@ class Index extends Controller
                 $pid = $process->pid;
 
                 // update table persistent_pipeline field pid
-                $persistent_pipeline = PersistentPipeline::get(['name' => $persistent_pipeline]);
+                $persistent_pipeline = PersistentPipeline::get(['id' => $persistent_pipeline_id]);
                 $persistent_pipeline->pid = $pid;
                 $persistent_pipeline->save();
             }

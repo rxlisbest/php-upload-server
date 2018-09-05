@@ -62,6 +62,7 @@ class Bucket extends Controller
     {
         $post = $request->post();
         $post['user_id'] = $request->user->id;
+        $post['status'] = BucketModel::STATUS_ON;
 
         $validate = new BucketValidate();
 

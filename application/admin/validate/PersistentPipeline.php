@@ -13,7 +13,7 @@ class PersistentPipeline extends Validate
      * @var array
      */	
 	protected $rule = [
-        'name' => 'require|regex:^[0-9a-zA-Z-_]*$|length:5,20|unique:persistent_pipeline,name^user_id'
+        'name' => 'require|regex:^[0-9a-zA-Z-_]*$|length:5,20|unique:persistent_pipeline,name^user_id^status'
     ];
     
     /**

@@ -13,7 +13,7 @@ class Bucket extends Validate
      * @var array
      */	
 	protected $rule = [
-	    'name' => 'require|regex:^[0-9a-zA-Z-]*$|length:4,63|unique:bucket,name^user_id'
+	    'name' => 'require|regex:^[0-9a-zA-Z-]*$|length:4,63|unique:bucket,name^user_id^status'
     ];
     
     /**
