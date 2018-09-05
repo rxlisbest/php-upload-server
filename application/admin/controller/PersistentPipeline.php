@@ -34,8 +34,13 @@ class PersistentPipeline extends Controller
         if(!$info){
             $this->redirect(url('create'));
         }
-        $persistent_list = PersistentModel::all(['pipeline' => $info->name]);
+        $query = [];
+        $persistent_list = PersistentModel::where(['pipeline' => $info->name])->order('id DESC')->paginate(10, false, [
+            'query' => $query
+        ]);;
+        $persistent_page = $persistent_list->render();
         $this->assign('persistent_list', $persistent_list);
+        $this->assign('persistent_page', $persistent_page);
         $this->assign('info', $info);
         $this->assign('list', $list);
         return $this->fetch();
