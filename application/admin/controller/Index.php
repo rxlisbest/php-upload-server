@@ -7,6 +7,10 @@ use think\Request;
 
 class Index extends Controller
 {
+    protected $middleware = [
+        'AdminAuth'
+    ];
+
     /**
      * 显示资源列表
      *
