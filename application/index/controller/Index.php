@@ -195,10 +195,11 @@ class Index extends Controller
 
         $user_dir = $persistent->upload_dir;
 
-        $bucket_dir = sprintf('%s%s/', $user_dir, $persistent->output_bucket);
-        if (!file_exists($bucket_dir)) {
-            mkdir($bucket_dir, 0777, true);
-            chmod($bucket_dir, 0777);
+        $input_bucket_dir = sprintf('%s%s/', $user_dir, $persistent->input_bucket);
+        $output_bucket_dir = sprintf('%s%s/', $user_dir, $persistent->output_bucket);
+        if (!file_exists($output_bucket_dir)) {
+            mkdir($output_bucket_dir, 0777, true);
+            chmod($output_bucket_dir, 0777);
         }
         $persistentOps = explode('|', $persistent['ops']);
         $option_arr = explode('/', $persistentOps[0]);
@@ -213,8 +214,8 @@ class Index extends Controller
         else{
             $transcoding = new Transcoding(['option' => $option]);
         }
-        $input = $bucket_dir . $persistent->input_key;
-        $output = $bucket_dir . $persistent->output_key;
+        $input = $input_bucket_dir . $persistent->input_key;
+        $output = $output_bucket_dir . $persistent->output_key;
         // if the input file is not exists, then continue;
         if(!is_file($input)){
             return false;
