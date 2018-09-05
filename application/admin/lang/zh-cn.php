@@ -35,9 +35,11 @@ return [
     'bucket_index_tab1_title' => '空间概览',
     'bucket_index_tab2_title' => '内容管理',
     'bucket_index_tab3_title' => '绑定域名',
+    'bucket_index_tab4_title' => '空间设置',
     'bucket_index_search_button_value' => '搜索',
     'bucket_index_table_th_name' => '域名',
     'bucket_index_table_th_create_time' => '创建时间',
+    'bucket_index_error_without' => 'Bucket不存在',
     'bucket_file_table_th_name' => '文件名',
     'bucket_file_table_th_create_time' => '创建时间',
     'bucket_create_input_name' => '名称',
@@ -107,4 +109,10 @@ return [
     'persistent_status_1' => '进行中',
     'persistent_status_3' => '失败',
     'persistent_status_0_notify_status_0' => '回调失败，任务执行成功',
+
+    'bucket_index_page_header_bucket_domain' => '域名列表',
+    'bucket_index_page_header_senior' => '高级设置',
+    'bucket_index_delete_label' => '删除空间',
+    'bucket_index_delete_alert' => '一旦删除空间，就永远无法再恢复过来，请确认是否有必要删除该空间！此操作会影响到和这个空间相关程序的运行。',
+    'bucket_index_delete_button' => '删除空间',
 ];

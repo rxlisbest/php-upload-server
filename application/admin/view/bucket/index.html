@@ -25,6 +25,27 @@
                     <li role="presentation"><a href="{:url('BucketDomain/create', ['bucket_id' => $info->id])}">{:lang('bucket_index_tab3_title')}</a></li>
                 </ul>
 
+                <div class="page-header">
+                    <h3><small>{:lang('bucket_index_page_header_senior')}</small></h3>
+                </div>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2">{:lang('bucket_index_delete_label')}</label>
+                        <div class="col-sm-10">
+                            {:lang('bucket_index_delete_alert')}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2"></label>
+                        <div class="col-sm-10">
+                            <a class="btn btn-danger ajax-confirm" data-url="{:url('delete', ['id' => $v['id']])}" data-label="{:lang('bucket_index_delete_label')}" data-body="{:lang('bucket_index_delete_alert')}">{:lang('bucket_index_delete_button')}</a>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="page-header">
+                    <h3><small>{:lang('bucket_index_page_header_bucket_domain')}</small></h3>
+                </div>
                 <table class="table table-striped margin-top-20">
                     <thead>
                         <tr>

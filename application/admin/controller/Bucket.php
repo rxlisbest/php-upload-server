@@ -119,36 +119,26 @@ class Bucket extends Controller
     }
 
     /**
-     * 显示编辑资源表单页.
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function edit($id)
-    {
-        return $this->fetch();
-    }
-
-    /**
-     * 保存更新的资源
-     *
-     * @param  \think\Request  $request
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
      * 删除指定资源
      *
      * @param  int  $id
      * @return \think\Response
      */
-    public function delete($id)
+    public function delete(Request $request, $id)
     {
-        //
+        $bucket = BucketModel::get(['user_id' => $request->user->id, 'id' => $id]);
+        if(!$bucket){
+            $this->error(lang('bucket_index_error_without'));
+        }
+
+        $bucket->status = BucketModel::STATUS_OFF;
+        $result = $bucket->save();
+
+        if($result !== false){
+            $this->success(lang('form_post_success'), url('index'));
+        }
+        else{
+            $this->error(lang('form_post_failure'));
+        }
     }
 }
