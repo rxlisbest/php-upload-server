@@ -8,5 +8,6 @@
 return [
     // dir
     'parent_tube' => '$$',
+    'parent_delete_tube' => '//',
     'maximum_number' => 3,
 ];

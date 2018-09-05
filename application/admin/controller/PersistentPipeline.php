@@ -87,47 +87,30 @@ class PersistentPipeline extends Controller
     }
 
     /**
-     * 显示指定的资源
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function read($id)
-    {
-        //
-    }
-
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * 保存更新的资源
-     *
-     * @param  \think\Request  $request
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
      * 删除指定资源
      *
      * @param  int  $id
      * @return \think\Response
      */
-    public function delete($id)
+    public function delete(Request $request, $id)
     {
-        //
+        $persistent_pipeline = PersistentPipelineModel::get(['user_id' => $request->user->id, 'id' => $id]);
+        if(!$persistent_pipeline){
+            $this->error(lang('persistent_pipeline_index_error_without'));
+        }
+
+        $persistent_count = PersistentModel::where(['pipeline' => $persistent_pipeline->name, 'status' => PersistentModel::STATUS_WAITING])->count();
+        if($persistent_count){
+            $this->error(lang('persistent_pipeline_index_error_without'));
+        }
+
+        $result = $persistent_pipeline->deletePersistentPipeline($persistent_pipeline->id);
+
+        if($result !== false){
+            $this->success(lang('form_post_success'), url('index'));
+        }
+        else{
+            $this->error(lang('form_post_failure'));
+        }
     }
 }

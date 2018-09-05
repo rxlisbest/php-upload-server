@@ -138,6 +138,7 @@ class Index extends Controller
         foreach($persistent_pipeline_list as $k => $v){
             $tube->put($v->name);
         }
+        // add process
         $process = new \swoole_process(function(\swoole_process $worker) use ($config){
             $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
             // 监听当前进程的tube
@@ -152,6 +153,7 @@ class Index extends Controller
                     continue;
                 }
                 $persistent_pipeline = $job->getData();
+                // transcoding process
                 $process = new \swoole_process(function(\swoole_process $worker) use ($config, $persistent_pipeline){
                     $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
                     // 监听当前进程的tube
@@ -182,6 +184,26 @@ class Index extends Controller
         \swoole_process::daemon();
         $process->start();
 
+        // delete process
+        $process = new \swoole_process(function(\swoole_process $worker) use ($config){
+            $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
+            // 监听当前进程的tube
+            $tube = $pheanstalk
+                ->watch(config('persistent_pipeline.parent_delete_tube'))
+                ->ignore('default');
+
+            while(1){
+                $job = $tube->reserve();
+                $pheanstalk->delete($job);
+                if(!$job){
+                    continue;
+                }
+                $pid = $job->getData();
+                \swoole_process::kill($pid, $signo = SIGTERM);
+            }
+        }, false);
+        \swoole_process::daemon();
+        $process->start();
 //        swoole_event_add($process->pipe, function($pipe) use($process) {
 //            echo sprintf(" code: %s\n", $process->read());
 ////            swoole_event_del($pipe);
