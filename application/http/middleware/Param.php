@@ -29,7 +29,7 @@ class Param
         }
 
         if(isset($param['persistentOps'])){
-            $pipeline = PersistentPipeline::get(['user_id' => $user_id, 'name' => $param['persistentPipeline']]);
+            $pipeline = PersistentPipeline::get(['user_id' => $user_id, 'name' => $param['persistentPipeline'], 'status' => PersistentPipeline::STATUS_ON]);
             if(!$pipeline){
                 return json(['error' => 'no such pipeline'], 612);
             }

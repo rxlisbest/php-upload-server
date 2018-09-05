@@ -103,11 +103,12 @@ class Index extends Controller
                     $persistent->create_time = time();
                     $persistent->save();
 
+                    $persistent_pipeline = PersistentPipeline::get(['user_id' => $request->user_id, 'name' => $param['persistentPipeline'], 'status' => PersistentPipeline::STATUS_ON]);
                     $config = Config::get('beanstalkd.');
                     $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
 
                     $pheanstalk
-                        ->useTube($param['persistentPipeline'])
+                        ->useTube($persistent_pipeline->id)
                         ->put($persistent->id);
                 }
 
