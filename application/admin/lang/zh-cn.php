@@ -6,8 +6,14 @@
  * Time: 下午12:38
  */
 return [
-    'copyright' => '© 2018-现在 ruiruisun.com 版权所有',
-    'logo_title'  => 'RRS 后台管理系统',
+    'version_title' => '版本号',
+    'author_title' => '作者',
+    'author' => 'Roy',
+    'email_title' => '邮箱',
+    'email' => 'rxlisbest@163.com',
+    'copyright' => '© 2018-现在 qituzi.com 版权所有',
+    'index_index_welcome' => '欢迎登录七兔子云',
+    'logo_title'  => '七兔子云',
     'form_post_success'  => '操作成功',
     'form_post_failure'  => '操作失败',
     'modal_button_close' => '关闭',
@@ -91,4 +97,8 @@ return [
     'persistent_pipeline_maximum_number_alert' => '多媒体队列数量超出限制',
     'bucket_maximum_number_alert' => 'bucket数量超出限制',
     'user_key_maximum_number_alert' => '密钥数量超出限制',
+    'persistent_status_0' => '成功',
+    'persistent_status_1' => '进行中',
+    'persistent_status_3' => '失败',
+    'persistent_status_0_notify_status_0' => '回调失败，任务执行成功',
 ];

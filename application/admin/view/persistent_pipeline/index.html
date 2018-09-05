@@ -34,7 +34,17 @@
                             <td title="{$v.persistent_id}">{$v.persistent_id}</td>
                             <td title="{$v.input_key}">{$v.input_key}</td>
                             <td title="{$v.ops}">{$v.ops}</td>
-                            <td>{$v.status}</td>
+                            <td>
+                                {eq name="v.status" value="0"}
+                                    {eq name="v.notify_status" value="0"}
+                                        {:lang('persistent_status_0_notify_status_0')}
+                                    {else/}
+                                        {:lang('persistent_status_0')}
+                                    {/eq}
+                                {else/}
+                                    {:lang('persistent_status_' . $v['status'])}
+                                {/eq}
+                            </td>
                             <td><a data-id="{$v.persistent_id}" data-input_key="{$v.input_key}" data-ops="{$v.ops}" data-status="{$v.status}" class="detail">{:lang('persistent_pipeline_index_table_td_operation')}</a></td>
                         </tr>
                     {/foreach}
@@ -60,7 +70,7 @@
             options.content = options.content.replace(/{{id}}/, $(this).data('id'));
             options.content = options.content.replace(/{{input_key}}/, $(this).data('input_key'));
             options.content = options.content.replace(/{{ops}}/, $(this).data('ops'));
-            options.content = options.content.replace(/{{status}}/, $(this).data('status'));
+            options.content = options.content.replace(/{{status}}/, $(this).parent().prev().html());
             $(this).popover(options);
         });
     </script>

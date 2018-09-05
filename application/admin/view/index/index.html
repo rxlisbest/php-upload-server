@@ -1,43 +1,25 @@
 {extend name="Public:base" /}
 {block name="title"}{:lang('login_index_title')}{/block}
 {block name="main"}
-    <div class="container margin-top-percent-10">
+    <div class="container">
+        <div class="jumbotron">
+            <h1>{:lang('index_index_welcome')}</h1>
+        </div>
         <div class="row">
-            <div class="col-md-offset-4 col-md-4">
-                <h1 class="text-center">
-                    {:lang('logo_title')}
-                </h1>
-            </div>
-            <div class="col-md-offset-4 col-md-4 margin-top-50">
-                <form method="" action="" class="form-horizontal ajax-form">
-                    <div class="form-group">
-                        <label for="username" class="col-sm-3 control-label"><p class="text-left">{:lang('login_index_input_user_name')}</p></label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="username" placeholder="{:lang('login_index_input_user_name')}" name="user_name">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="password" class="col-sm-3 control-label"><p class="text-left">{:lang('login_index_input_password')}</p></label>
-                        <div class="col-sm-9">
-                            <input type="password" class="form-control" id="password" placeholder="{:lang('login_index_input_password')}" name="password">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-3 col-sm-9">
-                            <div class="checkbox">
-                                <label>
-                                    <input name="remember_me" type="checkbox"> {:lang('login_index_input_remember_me')}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-3 col-sm-9">
-                            <button type="submit" class="btn btn-default">{:lang('login_index_button_submit')}</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+            <table class="table table-bordered">
+                <tr>
+                    <td>{:lang('version_title')}</td>
+                    <td>{:config('app.version')}</td>
+                </tr>
+                <tr>
+                    <td>{:lang('author_title')}</td>
+                    <td>{:lang('author')}</td>
+                </tr>
+                <tr>
+                    <td>{:lang('email_title')}</td>
+                    <td>{:lang('email')}</td>
+                </tr>
+            </table>
         </div>
     </div>
 {/block}
