@@ -18,7 +18,7 @@ class Api extends Controller
         // 视频转码配置
         $persistentOps = 'avthumb/m3u8/ab/128k/ar/44100/acodec/libfdk_aac/r/30/vb/900k/vcodec/libx264/s/640x480/autoscale/1/stripmeta/0';
         $persistentPipeline = 'pipeline-1';
-        $persistentNotifyUrl = 'http://cc441e81.ngrok.io/index.php/admin/public/qiniucallback';
+        $persistentNotifyUrl = 'http://www.baidu.com';
         /*** 配置结束 ***/
 
         $ext = $request->get('ext');
@@ -43,7 +43,7 @@ class Api extends Controller
                 $saveas = base64_encode($bucket . ':' . $saveas_key);
 
                 // 重新生成转码规格，包含转码后文件名称
-//                $persistentOps_list[$k] = sprintf('%s|saveas/%s', $v, $saveas);
+                $persistentOps_list[$k] = sprintf('%s|saveas/%s', $v, $saveas);
             }
             $persistentOps = implode(';', $persistentOps_list);
 

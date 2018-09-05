@@ -24,6 +24,14 @@ class Index extends Controller
         'Param' => ['only' => ['index']],
     ];
 
+    /**
+     * index
+     * @name: index
+     * @param Request $request
+     * @return \think\response\Json
+     * @author: RuiXinglong <ruixl@soocedu.com>
+     * @time: 2017-06-19 10:00:00
+     */
     public function index(Request $request)
     {
         $post = $request->post();
@@ -109,6 +117,13 @@ class Index extends Controller
         }
     }
 
+    /**
+     * daemon swoole process
+     * @name: process
+     * @return void
+     * @author: RuiXinglong <ruixl@soocedu.com>
+     * @time: 2017-06-19 10:00:00
+     */
     public function process(){
         // 连接beanstalkd
         $config = Config::get('beanstalkd.');
@@ -167,10 +182,18 @@ class Index extends Controller
 //        });
     }
 
+    /**
+     * transcoding
+     * @name: transcoding
+     * @param $id
+     * @return void
+     * @author: RuiXinglong <ruixl@soocedu.com>
+     * @time: 2017-06-19 10:00:00
+     */
     private function transcoding($id){
         $persistent = Persistent::get($id);
 
-        $user_dir = $persistent['upload_dir'];
+        $user_dir = $persistent->upload_dir;
 
         $bucket_dir = sprintf('%s%s/', $user_dir, $persistent->output_bucket);
         if (!file_exists($bucket_dir)) {
@@ -192,17 +215,57 @@ class Index extends Controller
         }
         $input = $bucket_dir . $persistent->input_key;
         $output = $bucket_dir . $persistent->output_key;
-        $transcoding->exec($input, $output);
+        // if the input file is not exists, then continue;
+        if(!is_file($input)){
+            return false;
+        }
+        $result = $transcoding->exec($input, $output);
 
+        // update table persistent field status
+        if($result === 0){
+            $persistent->status = Persistent::STATUS_SUCCESS;
+        }
+        else{
+            $persistent->status = Persistent::STATUS_FAIL;
+        }
+        $persistent->output_hash = hash_file('sha1', $output);
+        $persistent->save();
+        // get bucket info
+        $bucket = Bucket::get(['name' => $persistent->output_bucket, 'user_id' => $persistent->user_id]);
+
+        // insert into table file
+        $file_model = new File();
+        $file_model->bucket_id = $bucket->id;
+        $file_model->name = $persistent->output_key;
+        $file_model->save();
+
+        // notify client
         $this->notify($persistent->persistent_id);
     }
 
+    /**
+     * persistent notify
+     * @name: notify
+     * @param $persistent_id
+     * @return void
+     * @author: RuiXinglong <ruixl@soocedu.com>
+     * @time: 2017-06-19 10:00:00
+     */
     public function notify($persistent_id){
         $persistent_model = new Persistent();
         $data = $persistent_model->getInfo($persistent_id);
-
-        $curl = new Curl();
-        $curl->setHeader('Content-Type', 'application/json');
-        $curl->post($persistent->notify_url, $data);
+        if($data['code'] != Persistent::STATUS_WAITING){
+            $curl = new Curl();
+            $curl->setHeader('Content-Type', 'application/json');
+            $result = $curl->post($data['notifyUrl'], $data);
+            $where = [];
+            $where['persistent_id'] = $persistent_id;
+            if(!$result){
+                $persistent_model->save(['notify_status' => Persistent::NOTIFY_STATUS_SUCCESS], $where);
+            }
+            else{
+                $persistent_model->save(['notify_status' => Persistent::NOTIFY_STATUS_FAIL], $where);
+            }
+        }
     }
 }
