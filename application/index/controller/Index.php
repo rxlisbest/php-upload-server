@@ -171,6 +171,12 @@ class Index extends Controller
                 }, false);
                 \swoole_process::daemon();
                 $process->start();
+                $pid = $process->pid;
+                
+                // update table persistent_pipeline field pid
+                $persistent_pipeline = PersistentPipeline::get(['name' => $persistent_pipeline]);
+                $persistent_pipeline->pid = $pid;
+                $persistent_pipeline->save();
             }
         }, false);
         \swoole_process::daemon();

@@ -8,5 +8,5 @@
 return [
     // dir
     'parent_tube' => '$$',
-    'maximum_number' => 5,
+    'maximum_number' => 3,
 ];
