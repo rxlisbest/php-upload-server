@@ -51,6 +51,7 @@
                         <tr>
                             <th>{:lang('bucket_index_table_th_name')}</th>
                             <th>{:lang('bucket_index_table_th_create_time')}</th>
+                            <th>{:lang('bucket_index_table_th_operation')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,6 +59,9 @@
                         <tr>
                             <td>{$v.domain}</td>
                             <td>{$v.create_time}</td>
+                            <td>
+                                <a class="ajax-confirm" data-url="{:url('BucketDomain/delete', ['id' => $v['id']])}" data-label="{:lang('bucket_domain_index_delete_label')}" data-body="{:lang('bucket_domain_index_delete_alert')}">{:lang('bucket_domain_index_delete_label')}</a>
+                            </td>
                         </tr>
                     {/foreach}
                     </tbody>

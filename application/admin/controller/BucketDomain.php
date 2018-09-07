@@ -45,11 +45,9 @@ class BucketDomain extends Controller
         if($validate->check($post) === false){
             $this->error($validate->getError());
         }
-
+        $post['bucket_id'] = $request->bucket_id;
         $bucket_domain_model = new BucketDomainModel();
-        $bucket_domain_model->domain = $post['domain'];
-        $bucket_domain_model->bucket_id = $request->bucket_id;
-        $result = $bucket_domain_model->save();
+        $result = $bucket_domain_model->add($post);
         if($result !== false){
             $this->success(lang('form_post_success'), url('Bucket/index', ['id' => $request->bucket_id]));
         }
@@ -66,6 +64,18 @@ class BucketDomain extends Controller
      */
     public function delete($id)
     {
-        //
+        $bucket_domain = BucketDomainModel::get(['id' => $id]);
+        if(!$bucket_domain){
+            $this->error(lang('bucket_domain_index_error_without'));
+        }
+
+        $result = $bucket_domain->deleteBucketDomain($id);
+
+        if($result !== false){
+            $this->success(lang('form_post_success'), url('index'));
+        }
+        else{
+            $this->error(lang('form_post_failure'));
+        }
     }
 }
