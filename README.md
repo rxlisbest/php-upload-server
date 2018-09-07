@@ -34,4 +34,10 @@
 - 项目根目录执行命令 php public/index.php index/Index/process（启动转码队列）
 
 #### 说明
-- 此项目可以与https://github.com/rxlisbest/dynamic-domain配合使用
+- 文件存储规则/[config/upload.php中配置的上传根目录]/[用户ID]/[bucket]/文件名
+- 此项目可以与https://github.com/rxlisbest/dynamic-domain配合使用，来实现通过域名和文件名访问上传的资源
+
+#### 访问地址
+- 上传：http://域名
+- 后台管理：http://域名/admin
+- 前台上传example：http://域名/examples/index
