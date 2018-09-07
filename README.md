@@ -5,6 +5,7 @@
 - linux
 - php >= 7.1
 - swoole
+- mysql
 
 #### 部署步骤
 - git clone https://github.com/rxlisbest/php-upload-server.git
