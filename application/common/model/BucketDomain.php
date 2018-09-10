@@ -32,10 +32,9 @@ class BucketDomain extends Model
         $curl = new Curl();
         $post= [];
         $post['domain'] = $bucekt_domain->domain;
-        $post['directory'] = sprintf('/%s/%s/', $bucket->user_id, $bucket->name);
+        $post['directory'] = sprintf('/%s/%s/', $bucket->user_id, $bucket['name']);
         $result = $curl->post($dynamic_domain['url'] . '/api/add', $post);
-        $result = json_decode($result, true);
-        if($result && $result['code'] == 1){
+        if($result && $result->code == 1){
             Db::commit();
             return true;
         }
@@ -70,8 +69,7 @@ class BucketDomain extends Model
         $post= [];
         $post['domain'] = $bucekt_domain->domain;
         $result = $curl->post($dynamic_domain['url'] . '/api/delete', $post);
-        $result = json_decode($result, true);
-        if($result && $result['code'] == 1){
+        if($result && $result->code == 1){
             Db::commit();
             return true;
         }
