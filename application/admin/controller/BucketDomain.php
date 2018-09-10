@@ -72,7 +72,7 @@ class BucketDomain extends Controller
         $result = $bucket_domain->deleteBucketDomain($id);
 
         if($result !== false){
-            $this->success(lang('form_post_success'), url('index'));
+            $this->success(lang('form_post_success'), url('Bucket/index'));
         }
         else{
             $this->error(lang('form_post_failure'));
