@@ -1,5 +1,4 @@
 # php-upload-server
-===============
 
 #### 项目要求
 - linux
@@ -67,7 +66,7 @@ server {
 
 #### 说明
 - 文件存储规则/[config/upload.php中配置的上传根目录]/[用户ID]/[bucket]/文件名
-- 此项目可以与https://github.com/rxlisbest/dynamic-domain配合使用，来实现通过域名和文件名访问上传的资源
+- 此项目可以与 https://github.com/rxlisbest/dynamic-domain 配合使用，来实现通过域名和文件名访问上传的资源
 
 #### 访问地址
 - 上传：http://域名
