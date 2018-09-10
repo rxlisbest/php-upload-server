@@ -18,7 +18,7 @@ class Api extends Controller
         // 视频转码配置
         $persistentOps = 'avthumb/m3u8/ab/128k/ar/44100/acodec/libfdk_aac/r/30/vb/900k/vcodec/libx264/s/640x480/autoscale/1/stripmeta/0';
         $persistentPipeline = 'pipeline-1';
-        $persistentNotifyUrl = 'http://www.qituzi.com/';
+        $persistentNotifyUrl = 'http://www.qituzi.com/examples/api/notify';
         /*** 配置结束 ***/
 
         $ext = $request->get('ext');
@@ -58,5 +58,19 @@ class Api extends Controller
         $auth = new Auth($accessKey, $secretKey);
         $upToken = $auth->uploadToken($bucket, $key, 3600, $policy, true);
         return json(['upToken' => $upToken]);
+    }
+
+    /**
+     * notify
+     * @name: notify
+     * @return void
+     * @author: RuiXinglong <ruixl@soocedu.com>
+     * @time: 2017-06-19 10:00:00
+     */
+    public function notify(){
+        $data = file_get_contents("php://input");
+        $fp = fopen('notify.txt', 'w');
+        fwrite($fp, $data);
+        fclose($fp);
     }
 }

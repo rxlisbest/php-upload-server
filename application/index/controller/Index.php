@@ -290,10 +290,10 @@ class Index extends Controller
             $where = [];
             $where['persistent_id'] = $persistent_id;
             if(!$result){
-                $persistent_model->save(['notify_status' => Persistent::NOTIFY_STATUS_SUCCESS], $where);
+                $persistent_model->save(['notify_status' => Persistent::NOTIFY_STATUS_FAIL], $where);
             }
             else{
-                $persistent_model->save(['notify_status' => Persistent::NOTIFY_STATUS_FAIL], $where);
+                $persistent_model->save(['notify_status' => Persistent::NOTIFY_STATUS_SUCCESS], $where);
             }
         }
     }
