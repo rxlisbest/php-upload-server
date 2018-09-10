@@ -236,7 +236,6 @@ class Index extends Controller
         for($i = 0; $i < count($option_arr) / 2; $i ++){
             $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
         }
-
         if($option['avthumb'] == 'm3u8'){
             $transcoding = new Slice(['option' => $option]);
         }

@@ -14,6 +14,9 @@ class Auth
             return json(['error' => 'only allow POST method'], 405);
         }
         $token = $request->post('token');
+        if(!$token){
+            return json(['error' => 'token can not empty'], 405);
+        }
         $token = explode(':', $token);
         $param = json_decode(base64_decode($token[2]), true);
         $access_key = $token[0];

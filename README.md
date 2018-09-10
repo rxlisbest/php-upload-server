@@ -32,6 +32,37 @@
 - 项目根目录执行命令 php think seed:run
 - 项目根目录执行命令 composer update
 - 将虚拟目录配置到public文件夹下
+```
+server {
+    listen       80;
+    server_name  www.qituzi.com;
+
+    client_max_body_size 8M;
+    client_body_buffer_size 8M;
+
+    location / {
+        root   /Library/WebServer/Documents/htdocs/upload_server/public;
+        # root   html;
+        index  index.html index.htm index.php;
+        if (!-e $request_filename) {
+            rewrite  ^(.*)$  /index.php?s=/$1  last;
+        }
+    }
+    
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   html;
+    }
+    
+    location ~ \.php$ {
+        root           /Library/WebServer/Documents/htdocs/upload_server/public;
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+}
+```
 - 项目根目录执行命令 php public/index.php index/Index/process（启动转码队列）
 
 #### 说明
