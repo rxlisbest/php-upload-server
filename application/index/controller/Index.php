@@ -236,11 +236,12 @@ class Index extends Controller
         for($i = 0; $i < count($option_arr) / 2; $i ++){
             $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
         }
+        $ffmpeg_config = Config::get('ffmpeg.');
         if($option['avthumb'] == 'm3u8'){
-            $transcoding = new Slice(['option' => $option]);
+            $transcoding = new Slice(['option' => $option, 'ffmpeg' => $ffmpeg_config]);
         }
         else{
-            $transcoding = new Transcoding(['option' => $option]);
+            $transcoding = new Transcoding(['option' => $option, 'ffmpeg' => $ffmpeg_config]);
         }
         $input = $input_bucket_dir . $persistent->input_key;
         $output = $output_bucket_dir . $persistent->output_key;
