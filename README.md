@@ -27,6 +27,13 @@
         'dir' => '/Library/WebServer/Documents/htdocs/upload_server/public/upload/', // 上传文件的根目录
     ];
 ```
+- 修改config/ffmpeg.php(ffmpeg程序绝对路径)
+```
+return [
+    // dir
+    'bin' => '/usr/local/bin/ffmpeg', // ffmpeg bin file
+];
+```
 - 项目根目录执行命令 php think migrate:run
 - 项目根目录执行命令 php think seed:run
 - 项目根目录执行命令 composer update
