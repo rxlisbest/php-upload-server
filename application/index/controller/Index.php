@@ -54,7 +54,7 @@ class Index extends Controller
             chmod($bucket_dir, 0777);
         }
 
-        $upload = $bucket_dir . $post['key'];
+        $target = $bucket_dir . $post['key'];
         $slice_upload = new SliceUpload($bucket_dir);
         $result = $slice_upload->save($post['key']);
 
@@ -113,9 +113,9 @@ class Index extends Controller
                         ->put($persistent->id);
                 }
 
-                return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload), 'persistentId' => $persistent_id]);
+                return json(['key' => $post['key'], 'hash' => hash_file('sha1', $target), 'persistentId' => $persistent_id]);
             }
-            return json(['key' => $post['key'], 'hash' => hash_file('sha1', $upload)]);
+            return json(['key' => $post['key'], 'hash' => hash_file('sha1', $target)]);
         }
     }
 
