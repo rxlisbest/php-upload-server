@@ -54,6 +54,7 @@ class Index extends Controller
             chmod($bucket_dir, 0777);
         }
 
+        $upload = $bucket_dir . $post['key'];
         $slice_upload = new SliceUpload($bucket_dir);
         $result = $slice_upload->save($post['key']);
 
