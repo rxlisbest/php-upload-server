@@ -53,9 +53,9 @@ class Index extends Controller
             mkdir($bucket_dir, 0777, true);
             chmod($bucket_dir, 0777);
         }
-        $upload = $bucket_dir . $post['key'];
-        $slice_upload = new SliceUpload();
-        $result = $slice_upload->saveAs($upload);
+
+        $slice_upload = new SliceUpload($bucket_dir);
+        $result = $slice_upload->save($post['key']);
 
         if($result === 'success'){
             // insert into table file
