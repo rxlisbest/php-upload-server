@@ -27,6 +27,8 @@ class Param
         if(!$bucket){
             return json(['error' => 'no such bucket'], 631);
         }
+        $request->bucket = $bucket->name;
+        $request->bucket_id = $bucket->id;
 
         if(isset($param['persistentOps'])){
             $pipeline = PersistentPipeline::get(['user_id' => $user_id, 'name' => $param['persistentPipeline'], 'status' => PersistentPipeline::STATUS_ON]);
@@ -34,6 +36,12 @@ class Param
                 return json(['error' => 'no such pipeline'], 612);
             }
         }
+
+        // file directory
+        $config = Config::get('upload.');
+        $request->upload_dir = $config['dir'];
+        $request->user_dir = sprintf('%s%s/', $config['dir'], $request->user_id);
+        $request->bucket_dir = sprintf('%s%s/', $request->user_dir, $request->bucket);
         return $next($request);
     }
 }

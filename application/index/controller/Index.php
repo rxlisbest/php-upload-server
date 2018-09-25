@@ -34,89 +34,7 @@ class Index extends Controller
      */
     public function index(Request $request)
     {
-        $post = $request->post();
-        $param = $request->param;
-
-        $config = Config::get('upload.');
-        $user_dir = sprintf('%s%s/', $config['dir'], $request->user_id);
-
-        if(count(explode(':', $param['scope'])) > 1){
-            $bucket = explode(':', $param['scope'])[0];
-            $post['key'] = explode(':', $param['scope'])[1];
-        }
-        else{
-            $bucket = $param['scope'];
-        }
-
-        $bucket_dir = sprintf('%s%s/', $user_dir, $bucket);
-        if (!file_exists($bucket_dir)) {
-            mkdir($bucket_dir, 0777, true);
-            chmod($bucket_dir, 0777);
-        }
-
-        $target = $bucket_dir . $post['key'];
-        $slice_upload = new SliceUpload($bucket_dir);
-        $result = $slice_upload->save($post['key']);
-
-        if($result === 'success'){
-            // insert into table file
-            $bucket_info = Bucket::get(['name' => $bucket]);
-            $file = new File();
-            $file->name = $post['key'];
-            $file->bucket_id = $bucket_info->id;
-            $file->save();
-
-            if(isset($param['persistentOps'])){
-
-                $persistentOps_list = explode(';', $param['persistentOps']);
-                $persistent_id = uniqid('z0.', true);
-
-                foreach($persistentOps_list as $k => $v){
-                    // 存入数据库
-                    $persistent = new Persistent();
-                    $persistent->persistent_id = $persistent_id;
-                    $persistent->ops = $v;
-                    $persistent->pipeline = $param['persistentPipeline'];
-                    $persistent->notify_url = $param['persistentNotifyUrl'];
-                    $persistent->upload_dir = $user_dir;
-
-                    $persistent->input_bucket = $bucket;
-                    $persistent->input_key = $post['key'];
-
-                    $persistentOps = explode('|', $v);
-                    if(isset($persistentOps[1])){
-                        $option_arr = explode('/', $persistentOps[1]);
-                        $option = [];
-                        for($i = 0; $i < count($option_arr) / 2; $i ++){
-                            $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
-                        }
-                        $save_as = explode(':', base64_decode($option['saveas']));
-
-                        $persistent->output_bucket = $save_as[0];
-                        $persistent->output_key = $save_as[1];
-                    }
-                    else{
-                        $persistent->output_bucket = $bucket;
-                        $persistent->output_key = uniqid();
-                    }
-
-                    $persistent->user_id = $request->user_id;
-                    $persistent->create_time = time();
-                    $persistent->save();
-
-                    $persistent_pipeline = PersistentPipeline::get(['user_id' => $request->user_id, 'name' => $param['persistentPipeline'], 'status' => PersistentPipeline::STATUS_ON]);
-                    $config = Config::get('beanstalkd.');
-                    $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
-
-                    $pheanstalk
-                        ->useTube($persistent_pipeline->id)
-                        ->put($persistent->id);
-                }
-
-                return json(['key' => $post['key'], 'hash' => hash_file('sha1', $target), 'persistentId' => $persistent_id]);
-            }
-            return json(['key' => $post['key'], 'hash' => hash_file('sha1', $target)]);
-        }
+        return $this->save($request);
     }
 
     /**
@@ -298,5 +216,96 @@ class Index extends Controller
                 $persistent_model->save(['notify_status' => Persistent::NOTIFY_STATUS_SUCCESS], $where);
             }
         }
+    }
+
+    public function mkblk(Request $request){
+        $param = $request->param;
+
+        $target = $request->bucket_dir . $request->key;
+        $result = $this->save($request);
+
+        if($result === 'success'){
+            if(isset($param['persistentOps'])){
+                $persistent_id = $this->persistent($request);
+                return json(['key' => $request->key, 'hash' => hash_file('sha1', $target), 'persistentId' => $persistent_id]);
+            }
+            return json(['key' => $request->key, 'hash' => hash_file('sha1', $target)]);
+        }
+
+    }
+
+    public function mkfile(Request $request){
+        $key = $request->fname;
+        var_dump(base64_decode($key));
+    }
+
+    private function save($request){
+        $bucket_dir = $request->bucket_dir;
+
+        if (!file_exists($bucket_dir)) {
+            mkdir($bucket_dir, 0777, true);
+            chmod($bucket_dir, 0777);
+        }
+
+        $slice_upload = new SliceUpload($bucket_dir);
+
+        $result = $slice_upload->save($request->key);
+        if($result === 'success'){
+            // insert into table file
+            $file = new File();
+            $file->name = $request->key;
+            $file->bucket_id = $request->bucket_id;
+            $file->save();
+        }
+        return $result;
+    }
+
+    private function persistent($request){
+        $param = $request->param;
+        $persistentOps_list = explode(';', $param['persistentOps']);
+        $persistent_id = uniqid('z0.', true);
+
+        foreach($persistentOps_list as $k => $v){
+            // 存入数据库
+            $persistent = new Persistent();
+            $persistent->persistent_id = $persistent_id;
+            $persistent->ops = $v;
+            $persistent->pipeline = $param['persistentPipeline'];
+            $persistent->notify_url = $param['persistentNotifyUrl'];
+            $persistent->upload_dir = $request->upload_dir;
+
+            $persistent->input_bucket = $request->bucket;
+            $persistent->input_key = $request->key;
+
+            $persistentOps = explode('|', $v);
+            if(isset($persistentOps[1])){
+                $option_arr = explode('/', $persistentOps[1]);
+                $option = [];
+                for($i = 0; $i < count($option_arr) / 2; $i ++){
+                    $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
+                }
+                $save_as = explode(':', base64_decode($option['saveas']));
+
+                $persistent->output_bucket = $save_as[0];
+                $persistent->output_key = $save_as[1];
+            }
+            else{
+                $persistent->output_bucket = $request->bucket;
+                $persistent->output_key = uniqid();
+            }
+
+            $persistent->user_id = $request->user_id;
+            $persistent->create_time = time();
+            $persistent->save();
+
+            $persistent_pipeline = PersistentPipeline::get(['user_id' => $request->user_id, 'name' => $param['persistentPipeline'], 'status' => PersistentPipeline::STATUS_ON]);
+            $config = Config::get('beanstalkd.');
+            $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
+
+            $pheanstalk
+                ->useTube($persistent_pipeline->id)
+                ->put($persistent->id);
+        }
+        return $persistent_id;
     }
 }

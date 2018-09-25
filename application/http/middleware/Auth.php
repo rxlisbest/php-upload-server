@@ -13,7 +13,17 @@ class Auth
         if(!$request->isPost()){
             return json(['error' => 'only allow POST method'], 405);
         }
-        $token = $request->post('token');
+
+        $header = getallheaders();
+        if(isset($header['Authorization'])){
+            $authorization = $header['Authorization'];
+            $authorization = explode(' ', $authorization);
+            $token = $authorization[1];
+        }
+        else{
+            $token = $request->post('token');
+        }
+
         if(!$token){
             return json(['error' => 'token can not empty'], 405);
         }
@@ -31,6 +41,7 @@ class Auth
         if($sign !== implode(':', $token)){
             return json(['error' => 'bad token'], 401);
         }
+
         $request->param = $param;
         $request->user_id = $user_key->user_id;
         return $next($request);

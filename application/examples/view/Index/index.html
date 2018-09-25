@@ -31,7 +31,8 @@
             chunked : true,
             chunkSize : 4 * 1024 * 1024,
             // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
-            resize: false
+            resize: false,
+            // headers: {'Authorization': 'UpToken hjr7j6yL1Rr4PPLoeVflHGt0jF8qSJfg7GU8bHvb:eaBT4O2vRJSGF-pXPbWTVDHe2q4=:eyJwZXJzaXN0ZW50T3BzIjoiYXZ0aHVtYlwvbTN1OFwvYWJcLzEyOGtcL2FyXC80NDEwMFwvYWNvZGVjXC9saWJmZGtfYWFjXC9yXC8zMFwvdmJcLzkwMGtcL3Zjb2RlY1wvbGlieDI2NFwvc1wvNjQweDQ4MFwvYXV0b3NjYWxlXC8xXC9zdHJpcG1ldGFcLzB8c2F2ZWFzXC9ZblZqYTJWMExURTZNakF4T0RBNU1qSmZOV0poTmpReVlXWTRZakF6TkM1dE0zVTQiLCJwZXJzaXN0ZW50Tm90aWZ5VXJsIjoiaHR0cDpcL1wvd3d3LnFpdHV6aS5jb21cL2V4YW1wbGVzXC9hcGlcL25vdGlmeSIsInBlcnNpc3RlbnRQaXBlbGluZSI6InBpcGVsaW5lLTEiLCJzY29wZSI6ImJ1Y2tldC0xOjIwMTgwOTIyXzViYTY0MmFmOGIwMGIubXBnIiwiZGVhZGxpbmUiOjE1Mzc2MjYzMDN9'}
         });
         // 加入队列后请求上传token
         uploader.on('fileQueued', function(file) {

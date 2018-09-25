@@ -9,6 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 Route::rule('status/get/prefop', 'index/Api/prefop');
+Route::rule('mkblk/<size>', 'index/Index/mkblk')->pattern(['size' => '\d+']);
+Route::rule('mkfile/<size>', 'index/Index/mkfile')->pattern(['size' => '\d+']);
 
 return [
 
