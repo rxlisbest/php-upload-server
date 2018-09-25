@@ -18,10 +18,13 @@ class Param
 
         if(count(explode(':', $param['scope'])) > 1){
             $bucket_name = explode(':', $param['scope'])[0];
+            $key = explode(':', $param['scope'])[1];
         }
         else{
             $bucket_name = $param['scope'];
+            $key = '';
         }
+        $request->key = $key;
 
         $bucket = Bucket::get(['user_id' => $user_id, 'name' => $bucket_name]);
         if(!$bucket){

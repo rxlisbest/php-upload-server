@@ -19,13 +19,14 @@ use think\Request;
 class Index extends Controller
 {
     protected $middleware = [
-        'Cors' => ['only' => ['index']],
-        'Auth' => ['only' => ['index']],
-        'Param' => ['only' => ['index']],
+        'Cors' => ['only' => ['index', 'mkblk']],
+        'Auth' => ['only' => ['index', 'mkblk']],
+        'Param' => ['only' => ['index', 'mkblk']],
+        'OctetStream' => ['only' => ['mkblk', 'mkfile']],
     ];
 
     /**
-     * index
+     * 表单上传
      * @name: index
      * @param Request $request
      * @return \think\response\Json
@@ -218,6 +219,14 @@ class Index extends Controller
         }
     }
 
+    /**
+     * 二进制上传
+     * @name: mkblk
+     * @param Request $request
+     * @return \think\response\Json
+     * @author: RuiXinglong <ruixl@soocedu.com>
+     * @time: 2017-06-19 10:00:00
+     */
     public function mkblk(Request $request){
         $param = $request->param;
 
@@ -234,11 +243,33 @@ class Index extends Controller
 
     }
 
+    /**
+     * 二进制上传重命名
+     * @name: mkfile
+     * @param Request $request
+     * @return \think\response\Json
+     * @author: RuiXinglong <ruixl@soocedu.com>
+     * @time: 2017-06-19 10:00:00
+     */
     public function mkfile(Request $request){
-        $key = $request->fname;
-        var_dump(base64_decode($key));
+        $slice_upload = new SliceUpload($request->bucket_dir, $request->old_key);
+        // rename
+        $slice_upload->rename($request->key);
+
+        $persistent_id = $this->persistent($request);
+
+        $target = $request->bucket_dir . $request->key;
+        return json(['key' => $request->key, 'hash' => hash_file('sha1', $target), 'persistentId' => $persistent_id]);
     }
 
+    /**
+     * 上传
+     * @name: save
+     * @param $request
+     * @return void
+     * @author: RuiXinglong <ruixl@soocedu.com>
+     * @time: 2017-06-19 10:00:00
+     */
     private function save($request){
         $bucket_dir = $request->bucket_dir;
 
@@ -247,9 +278,9 @@ class Index extends Controller
             chmod($bucket_dir, 0777);
         }
 
-        $slice_upload = new SliceUpload($bucket_dir);
+        $slice_upload = new SliceUpload($bucket_dir, $request->key);
 
-        $result = $slice_upload->save($request->key);
+        $result = $slice_upload->save();
         if($result === 'success'){
             // insert into table file
             $file = new File();
@@ -260,6 +291,14 @@ class Index extends Controller
         return $result;
     }
 
+    /**
+     * 转码
+     * @name: persistent
+     * @param $request
+     * @return string
+     * @author: RuiXinglong <ruixl@soocedu.com>
+     * @time: 2017-06-19 10:00:00
+     */
     private function persistent($request){
         $param = $request->param;
         $persistentOps_list = explode(';', $param['persistentOps']);

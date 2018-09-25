@@ -27,7 +27,10 @@ class Auth
         if(!$token){
             return json(['error' => 'token can not empty'], 405);
         }
+
         $token = explode(':', $token);
+        $request->token = $token;
+
         $param = json_decode(base64_decode($token[2]), true);
         $access_key = $token[0];
         $user_key = UserKey::get(['access_key' => $access_key, 'status' => UserKeyModel::STATUS_ON]);
