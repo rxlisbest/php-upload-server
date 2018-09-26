@@ -1,4 +1,5 @@
 <?php
+
 namespace app\index\controller;
 
 use app\common\model\Bucket;
@@ -35,7 +36,19 @@ class Index extends Controller
      */
     public function index(Request $request)
     {
-        return $this->save($request);
+        $param = $request->param;
+
+        $target = $request->bucket_dir . $request->key;
+        $result = $this->save($request);
+
+        $data = ['key' => $request->key, 'hash' => hash_file('sha1', $target)];
+        if ($result === 'success') {
+            if (isset($param['persistentOps'])) {
+                $persistent_id = $this->persistent($request);
+                $data['persistentId'] = $persistent_id;
+            }
+            return json($data);
+        }
     }
 
     /**
@@ -45,7 +58,8 @@ class Index extends Controller
      * @author: RuiXinglong <ruixl@soocedu.com>
      * @time: 2017-06-19 10:00:00
      */
-    public function process(){
+    public function process()
+    {
         // 连接beanstalkd
         $config = Config::get('beanstalkd.');
         $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
@@ -56,36 +70,36 @@ class Index extends Controller
         $where = [];
         $where['status'] = PersistentPipeline::STATUS_ON;
         $persistent_pipeline_list = PersistentPipeline::all($where);
-        foreach($persistent_pipeline_list as $k => $v){
+        foreach ($persistent_pipeline_list as $k => $v) {
             $tube->put($v->id);
         }
         // add process
-        $process = new \swoole_process(function(\swoole_process $worker) use ($config){
+        $process = new \swoole_process(function (\swoole_process $worker) use ($config) {
             $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
             // 监听当前进程的tube
             $tube = $pheanstalk
                 ->watch(config('persistent_pipeline.parent_tube'))
                 ->ignore('default');
 
-            while(1){
+            while (1) {
                 $job = $tube->reserve();
                 $pheanstalk->delete($job);
-                if(!$job){
+                if (!$job) {
                     continue;
                 }
                 $persistent_pipeline_id = $job->getData();
                 // transcoding process
-                $process = new \swoole_process(function(\swoole_process $worker) use ($config, $persistent_pipeline_id){
+                $process = new \swoole_process(function (\swoole_process $worker) use ($config, $persistent_pipeline_id) {
                     $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
                     // 监听当前进程的tube
                     $tube = $pheanstalk
                         ->watch($persistent_pipeline_id)
                         ->ignore('default');
 
-                    while(1){
+                    while (1) {
                         $job = $tube->reserve();
                         $pheanstalk->delete($job);
-                        if(!$job){
+                        if (!$job) {
                             continue;
                         }
                         $id = $job->getData();
@@ -106,17 +120,17 @@ class Index extends Controller
         $process->start();
 
         // delete process
-        $process = new \swoole_process(function(\swoole_process $worker) use ($config){
+        $process = new \swoole_process(function (\swoole_process $worker) use ($config) {
             $pheanstalk = new Pheanstalk($config['hostname'], $config['hostport']);
             // 监听当前进程的tube
             $tube = $pheanstalk
                 ->watch(config('persistent_pipeline.parent_delete_tube'))
                 ->ignore('default');
 
-            while(1){
+            while (1) {
                 $job = $tube->reserve();
                 $pheanstalk->delete($job);
-                if(!$job){
+                if (!$job) {
                     continue;
                 }
                 $pid = $job->getData();
@@ -125,10 +139,10 @@ class Index extends Controller
         }, false);
         \swoole_process::daemon();
         $process->start();
-//        swoole_event_add($process->pipe, function($pipe) use($process) {
-//            echo sprintf(" code: %s\n", $process->read());
-////            swoole_event_del($pipe);
-//        });
+        //        swoole_event_add($process->pipe, function($pipe) use($process) {
+        //            echo sprintf(" code: %s\n", $process->read());
+        ////            swoole_event_del($pipe);
+        //        });
     }
 
     /**
@@ -139,7 +153,8 @@ class Index extends Controller
      * @author: RuiXinglong <ruixl@soocedu.com>
      * @time: 2017-06-19 10:00:00
      */
-    private function transcoding($id){
+    private function transcoding($id)
+    {
         $persistent = Persistent::get($id);
 
         $user_dir = $persistent->upload_dir;
@@ -153,29 +168,27 @@ class Index extends Controller
         $persistentOps = explode('|', $persistent['ops']);
         $option_arr = explode('/', $persistentOps[0]);
         $option = [];
-        for($i = 0; $i < count($option_arr) / 2; $i ++){
+        for ($i = 0; $i < count($option_arr) / 2; $i++) {
             $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
         }
         $ffmpeg_config = Config::get('ffmpeg.');
-        if($option['avthumb'] == 'm3u8'){
+        if ($option['avthumb'] == 'm3u8') {
             $transcoding = new Slice(['option' => $option, 'ffmpeg' => $ffmpeg_config]);
-        }
-        else{
+        } else {
             $transcoding = new Transcoding(['option' => $option, 'ffmpeg' => $ffmpeg_config]);
         }
         $input = $input_bucket_dir . $persistent->input_key;
         $output = $output_bucket_dir . $persistent->output_key;
         // if the input file is not exists, then continue;
-        if(!is_file($input)){
+        if (!is_file($input)) {
             return false;
         }
         $result = $transcoding->exec($input, $output);
 
         // update table persistent field status
-        if($result === 0){
+        if ($result === 0) {
             $persistent->status = Persistent::STATUS_SUCCESS;
-        }
-        else{
+        } else {
             $persistent->status = Persistent::STATUS_FAIL;
         }
         $persistent->output_hash = hash_file('sha1', $output);
@@ -201,19 +214,19 @@ class Index extends Controller
      * @author: RuiXinglong <ruixl@soocedu.com>
      * @time: 2017-06-19 10:00:00
      */
-    public function notify($persistent_id){
+    public function notify($persistent_id)
+    {
         $persistent_model = new Persistent();
         $data = $persistent_model->getInfo($persistent_id);
-        if($data['code'] != Persistent::STATUS_WAITING){
+        if ($data['code'] != Persistent::STATUS_WAITING) {
             $curl = new Curl();
             $curl->setHeader('Content-Type', 'application/json');
             $result = $curl->post($data['notifyUrl'], $data);
             $where = [];
             $where['persistent_id'] = $persistent_id;
-            if(!$result){
+            if (!$result) {
                 $persistent_model->save(['notify_status' => Persistent::NOTIFY_STATUS_FAIL], $where);
-            }
-            else{
+            } else {
                 $persistent_model->save(['notify_status' => Persistent::NOTIFY_STATUS_SUCCESS], $where);
             }
         }
@@ -227,20 +240,9 @@ class Index extends Controller
      * @author: RuiXinglong <ruixl@soocedu.com>
      * @time: 2017-06-19 10:00:00
      */
-    public function mkblk(Request $request){
-        $param = $request->param;
-
-        $target = $request->bucket_dir . $request->key;
-        $result = $this->save($request);
-
-        if($result === 'success'){
-            if(isset($param['persistentOps'])){
-                $persistent_id = $this->persistent($request);
-                return json(['key' => $request->key, 'hash' => hash_file('sha1', $target), 'persistentId' => $persistent_id]);
-            }
-            return json(['key' => $request->key, 'hash' => hash_file('sha1', $target)]);
-        }
-
+    public function mkblk(Request $request)
+    {
+        return $this->save($request);
     }
 
     /**
@@ -251,8 +253,10 @@ class Index extends Controller
      * @author: RuiXinglong <ruixl@soocedu.com>
      * @time: 2017-06-19 10:00:00
      */
-    public function mkfile(Request $request){
+    public function mkfile(Request $request)
+    {
         $slice_upload = new SliceUpload($request->bucket_dir, $request->old_key);
+
         // rename
         $slice_upload->rename($request->key);
 
@@ -270,7 +274,8 @@ class Index extends Controller
      * @author: RuiXinglong <ruixl@soocedu.com>
      * @time: 2017-06-19 10:00:00
      */
-    private function save($request){
+    private function save($request)
+    {
         $bucket_dir = $request->bucket_dir;
 
         if (!file_exists($bucket_dir)) {
@@ -281,7 +286,7 @@ class Index extends Controller
         $slice_upload = new SliceUpload($bucket_dir, $request->key);
 
         $result = $slice_upload->save();
-        if($result === 'success'){
+        if ($result === 'success') {
             // insert into table file
             $file = new File();
             $file->name = $request->key;
@@ -292,19 +297,20 @@ class Index extends Controller
     }
 
     /**
-     * 转码
+     * 添加转码队列
      * @name: persistent
      * @param $request
      * @return string
      * @author: RuiXinglong <ruixl@soocedu.com>
      * @time: 2017-06-19 10:00:00
      */
-    private function persistent($request){
+    private function persistent($request)
+    {
         $param = $request->param;
         $persistentOps_list = explode(';', $param['persistentOps']);
         $persistent_id = uniqid('z0.', true);
 
-        foreach($persistentOps_list as $k => $v){
+        foreach ($persistentOps_list as $k => $v) {
             // 存入数据库
             $persistent = new Persistent();
             $persistent->persistent_id = $persistent_id;
@@ -317,18 +323,17 @@ class Index extends Controller
             $persistent->input_key = $request->key;
 
             $persistentOps = explode('|', $v);
-            if(isset($persistentOps[1])){
+            if (isset($persistentOps[1])) {
                 $option_arr = explode('/', $persistentOps[1]);
                 $option = [];
-                for($i = 0; $i < count($option_arr) / 2; $i ++){
+                for ($i = 0; $i < count($option_arr) / 2; $i++) {
                     $option[$option_arr[2 * $i]] = $option_arr[2 * $i + 1];
                 }
                 $save_as = explode(':', base64_decode($option['saveas']));
 
                 $persistent->output_bucket = $save_as[0];
                 $persistent->output_key = $save_as[1];
-            }
-            else{
+            } else {
                 $persistent->output_bucket = $request->bucket;
                 $persistent->output_key = uniqid();
             }
