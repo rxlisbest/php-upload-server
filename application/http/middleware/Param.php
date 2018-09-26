@@ -5,6 +5,8 @@ namespace app\http\middleware;
 use app\common\model\Bucket;
 use app\common\model\PersistentPipeline;
 
+use think\facade\Config;
+
 class Param
 {
     public function handle($request, \Closure $next)

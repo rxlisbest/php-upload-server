@@ -41,12 +41,13 @@ class Index extends Controller
         $target = $request->bucket_dir . $request->key;
         $result = $this->save($request);
 
-        $data = ['key' => $request->key, 'hash' => hash_file('sha1', $target)];
+        $data = ['key' => $request->key];
         if ($result === 'success') {
             if (isset($param['persistentOps'])) {
                 $persistent_id = $this->persistent($request);
                 $data['persistentId'] = $persistent_id;
             }
+            $data['hash'] = hash_file('sha1', $target);
             return json($data);
         }
     }
