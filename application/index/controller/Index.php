@@ -50,6 +50,9 @@ class Index extends Controller
             $data['hash'] = hash_file('sha1', $target);
             return json($data);
         }
+        else{
+            return $result;
+        }
     }
 
     /**
