@@ -20,9 +20,10 @@ use think\Request;
 class Index extends Controller
 {
     protected $middleware = [
-        'Cors' => ['only' => ['index', 'mkblk']],
-        'Auth' => ['only' => ['index', 'mkblk']],
+        'Cors' => ['only' => ['index', 'mkblk', 'mkfile']],
+        'Auth' => ['only' => ['index', 'mkblk', 'mkfile']],
         'Param' => ['only' => ['index', 'mkblk']],
+        'FormData' => ['only' => ['index']],
         'OctetStream' => ['only' => ['mkblk', 'mkfile']],
     ];
 
@@ -246,7 +247,8 @@ class Index extends Controller
      */
     public function mkblk(Request $request)
     {
-        return $this->save($request);
+        $result = $this->save($request);
+        return json(['ctx' => $result]);
     }
 
     /**

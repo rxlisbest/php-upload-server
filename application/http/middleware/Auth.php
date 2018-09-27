@@ -15,8 +15,8 @@ class Auth
         }
 
         $header = getallheaders();
-        if(isset($header['Authorization'])){
-            $authorization = $header['Authorization'];
+        if(isset($header['authorization'])){
+            $authorization = $header['authorization'];
             $authorization = explode(' ', $authorization);
             $token = $authorization[1];
         }
