@@ -11,7 +11,7 @@ class FormData
             if (isset($post['key']) && trim($post['key'])) {
                 $request->save_key = trim($post['key']);
             } else {
-                $request->save_key = uniqid();
+                $request->save_key = $request->token[1];
             }
         }
         return $next($request);
