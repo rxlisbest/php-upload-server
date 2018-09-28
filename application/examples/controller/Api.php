@@ -56,7 +56,7 @@ class Api extends Controller
 
         // 生成上传token
         $auth = new Auth($accessKey, $secretKey);
-        $upToken = $auth->uploadToken($bucket, $key, 3600, $policy, true);
+        $upToken = $auth->uploadToken($bucket, '', 3600, $policy, true);
         return json(['upToken' => $upToken]);
     }
 

@@ -8,7 +8,8 @@ class OctetStream
     {
         if ($request->save_key === '') {
             $request->save_key = $request->token[1];
-        } else {
+        }
+        if (!isset($request->key) || !trim($request->key)) {
             $request->key = base64_encode($request->save_key);
         }
         return $next($request);

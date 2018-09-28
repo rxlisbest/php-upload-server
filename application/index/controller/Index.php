@@ -39,10 +39,10 @@ class Index extends Controller
     {
         $param = $request->param;
 
-        $target = $request->bucket_dir . $request->key;
+        $target = $request->bucket_dir . $request->save_key;
         $result = $this->save($request);
 
-        $data = ['key' => $request->key];
+        $data = ['key' => $request->save_key];
         if ($result === 'success') {
             if (isset($param['persistentOps'])) {
                 $persistent_id = $this->persistent($request);
@@ -50,8 +50,7 @@ class Index extends Controller
             }
             $data['hash'] = hash_file('sha1', $target);
             return json($data);
-        }
-        else{
+        } else {
             return $result;
         }
     }
@@ -263,8 +262,11 @@ class Index extends Controller
     {
         $slice_upload = new SliceUpload($request->bucket_dir);
 
+        $request->key = base64_decode($request->key);
         // rename
-        $slice_upload->rename($request->save_key, $request->key);
+        if ($request->key !== $request->save_key) {
+            $slice_upload->rename($request->save_key, $request->key);
+        }
 
         $persistent_id = $this->persistent($request);
 
