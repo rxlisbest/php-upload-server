@@ -7,8 +7,8 @@ class FormData
     public function handle($request, \Closure $next)
     {
         $post = $request->post();
-        if($request->key === ''){
-            $request->key = $post['key'];
+        if($request->save_key === ''){
+            $request->save_key = $post['key'];
         }
         return $next($request);
     }

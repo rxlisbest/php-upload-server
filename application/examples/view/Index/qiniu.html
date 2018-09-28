@@ -27,10 +27,14 @@
             // uptoken : '<Your upload token>', // uptoken是上传凭证，由其他程序生成
             // uptoken_url: '/uptoken',         // Ajax请求uptoken的Url，强烈建议设置（服务端提供）
             uptoken_func: function(file){    // 在需要获取uptoken时，该方法会被调用
+                if(file.name.length > 1 && file.name ) {
+                    var ldot = file.name.lastIndexOf(".");
+                    var file_type = file.name.substring(ldot + 1);
+                };
                 $.ajax({
                     type: "GET",
                     url: "{:url('api/token')}",
-                    data: {ext: file.ext},
+                    data: {ext: file_type},
                     async: false,
                     success: function(response){
                         uptoken = response.upToken;

@@ -14,30 +14,29 @@ class Param
         $param = $request->param;
         $user_id = $request->user_id;
 
-        if(!isset($param['scope']) || !$param['scope']){
+        if (!isset($param['scope']) || !$param['scope']) {
             return json(['error' => 'scope not specified'], 400);
         }
 
-        if(count(explode(':', $param['scope'])) > 1){
+        if (count(explode(':', $param['scope'])) > 1) {
             $bucket_name = explode(':', $param['scope'])[0];
-            $key = explode(':', $param['scope'])[1];
-        }
-        else{
+            $save_key = explode(':', $param['scope'])[1];
+        } else {
             $bucket_name = $param['scope'];
-            $key = '';
+            $save_key = '';
         }
-        $request->key = $key;
+        $request->save_key = $save_key;
 
         $bucket = Bucket::get(['user_id' => $user_id, 'name' => $bucket_name]);
-        if(!$bucket){
+        if (!$bucket) {
             return json(['error' => 'no such bucket'], 631);
         }
         $request->bucket = $bucket->name;
         $request->bucket_id = $bucket->id;
 
-        if(isset($param['persistentOps'])){
+        if (isset($param['persistentOps'])) {
             $pipeline = PersistentPipeline::get(['user_id' => $user_id, 'name' => $param['persistentPipeline'], 'status' => PersistentPipeline::STATUS_ON]);
-            if(!$pipeline){
+            if (!$pipeline) {
                 return json(['error' => 'no such pipeline'], 612);
             }
         }

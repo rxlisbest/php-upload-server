@@ -22,7 +22,7 @@ class Index extends Controller
     protected $middleware = [
         'Cors' => ['only' => ['index', 'mkblk', 'mkfile']],
         'Auth' => ['only' => ['index', 'mkblk', 'mkfile']],
-        'Param' => ['only' => ['index', 'mkblk']],
+        'Param' => ['only' => ['index', 'mkblk', 'mkfile']],
         'FormData' => ['only' => ['index']],
         'OctetStream' => ['only' => ['mkblk', 'mkfile']],
     ];
@@ -261,10 +261,10 @@ class Index extends Controller
      */
     public function mkfile(Request $request)
     {
-        $slice_upload = new SliceUpload($request->bucket_dir, $request->old_key);
+        $slice_upload = new SliceUpload($request->bucket_dir);
 
         // rename
-        $slice_upload->rename($request->key);
+        $slice_upload->rename($request->save_key, $request->key);
 
         $persistent_id = $this->persistent($request);
 
@@ -289,9 +289,9 @@ class Index extends Controller
             chmod($bucket_dir, 0777);
         }
 
-        $slice_upload = new SliceUpload($bucket_dir, $request->key);
+        $slice_upload = new SliceUpload($bucket_dir);
 
-        $result = $slice_upload->save();
+        $result = $slice_upload->save($request->save_key);
         if ($result === 'success') {
             // insert into table file
             $file = new File();

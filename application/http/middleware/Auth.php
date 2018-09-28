@@ -10,21 +10,26 @@ class Auth
 {
     public function handle($request, \Closure $next)
     {
-        if(!$request->isPost()){
+        if (!$request->isPost()) {
             return json(['error' => 'only allow POST method'], 405);
         }
 
         $header = getallheaders();
-        if(isset($header['authorization'])){
-            $authorization = $header['authorization'];
+        $authorization = '';
+        foreach ($header as $k => $v) {
+            if(strtolower($k) == 'authorization'){
+                $authorization = $v;
+            }
+        }
+
+        if ($authorization !== '') {
             $authorization = explode(' ', $authorization);
             $token = $authorization[1];
-        }
-        else{
+        } else {
             $token = $request->post('token');
         }
 
-        if(!$token){
+        if (!$token) {
             return json(['error' => 'token can not empty'], 405);
         }
 
@@ -34,14 +39,14 @@ class Auth
         $param = json_decode(base64_decode($token[2]), true);
         $access_key = $token[0];
         $user_key = UserKey::get(['access_key' => $access_key, 'status' => UserKeyModel::STATUS_ON]);
-        if(!$user_key){
+        if (!$user_key) {
             return json(['error' => 'bad token'], 401);
         }
         $secret_key = $user_key->secret_key;
         $auth = new QiniuAuth($access_key, $secret_key);
         $sign = $auth->signWithData(json_encode($param));
 
-        if($sign !== implode(':', $token)){
+        if ($sign !== implode(':', $token)) {
             return json(['error' => 'bad token'], 401);
         }
 
