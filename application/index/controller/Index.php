@@ -288,14 +288,12 @@ class Index extends Controller
             mkdir($bucket_dir, 0777, true);
             chmod($bucket_dir, 0777);
         }
-
         $slice_upload = new SliceUpload($bucket_dir);
-
         $result = $slice_upload->save($request->save_key);
         if ($result === 'success') {
             // insert into table file
             $file = new File();
-            $file->name = $request->key;
+            $file->name = $request->save_key;
             $file->bucket_id = $request->bucket_id;
             $file->save();
         }
@@ -326,7 +324,7 @@ class Index extends Controller
             $persistent->upload_dir = $request->upload_dir;
 
             $persistent->input_bucket = $request->bucket;
-            $persistent->input_key = $request->key;
+            $persistent->input_key = $request->save_key;
 
             $persistentOps = explode('|', $v);
             if (isset($persistentOps[1])) {
