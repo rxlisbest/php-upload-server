@@ -14,6 +14,7 @@ use Rxlisbest\FFmpegTranscoding\Transcoding;
 use Rxlisbest\SliceUpload\SliceUpload;
 
 use think\Controller;
+use think\Exception;
 use think\facade\Config;
 use think\Request;
 
@@ -265,7 +266,11 @@ class Index extends Controller
         $request->key = base64_decode($request->key);
         // rename
         if ($request->key !== $request->save_key) {
-            $slice_upload->rename($request->save_key, $request->key);
+            try {
+                $slice_upload->rename($request->save_key, $request->key);
+            } catch (\Exception $e) {
+                return json(['error' => $e->getMessage()], 405);
+            }
         }
 
         $persistent_id = $this->persistent($request);
