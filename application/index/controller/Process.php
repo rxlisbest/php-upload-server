@@ -156,10 +156,10 @@ class Process extends Controller
         // update table persistent field status
         if ($result === 0) {
             $persistent->status = Persistent::STATUS_SUCCESS;
+            $persistent->output_hash = hash_file('sha1', $output);
         } else {
             $persistent->status = Persistent::STATUS_FAIL;
         }
-        $persistent->output_hash = hash_file('sha1', $output);
         $persistent->save();
         // get bucket info
         $bucket = Bucket::get(['name' => $persistent->output_bucket, 'user_id' => $persistent->user_id]);
