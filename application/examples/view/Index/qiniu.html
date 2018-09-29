@@ -21,6 +21,7 @@
         var uploader = Qiniu.uploader({
             runtimes: 'html5,flash,html4',      // 上传模式，依次退化
             browse_button: 'picker',         // 上传选择的点选按钮，必需
+            upload_url: 'http://127.0.0.1:8094',
             // 在初始化时，uptoken，uptoken_url，uptoken_func三个参数中必须有一个被设置
             // 切如果提供了多个，其优先级为uptoken > uptoken_url > uptoken_func
             // 其中uptoken是直接提供上传凭证，uptoken_url是提供了获取上传凭证的地址，如果需要定制获取uptoken的过程则可以设置uptoken_func
