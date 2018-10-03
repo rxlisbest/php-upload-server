@@ -43,7 +43,7 @@ class Api extends Controller
                 $saveas = base64_encode($bucket . ':' . $saveas_key);
 
                 // 重新生成转码规格，包含转码后文件名称
-                $persistentOps_list[$k] = sprintf('%s|saveas/%s', $v, $saveas);
+//                $persistentOps_list[$k] = sprintf('%s|saveas/%s', $v, $saveas);
             }
             $persistentOps = implode(';', $persistentOps_list);
 

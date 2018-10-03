@@ -141,6 +141,10 @@ class Process extends Controller
         $ffmpeg_config = Config::get('ffmpeg.');
         if ($option['avthumb'] == 'm3u8') {
             $transcoding = new Slice(['option' => $option, 'ffmpeg' => $ffmpeg_config]);
+
+            if(substr($persistent->output_key, strrpos($persistent->output_key, '.')) != '.m3u8'){
+                $persistent->output_key .= '.m3u8';
+            }
         } else {
             $transcoding = new Transcoding(['option' => $option, 'ffmpeg' => $ffmpeg_config]);
         }
